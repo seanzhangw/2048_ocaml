@@ -9,22 +9,22 @@ code:
 	code .
 	! dune build --watch
 
-utop:
-	OCAMLRUNPARAM=b dune utop lib
+# utop:
+# 	OCAMLRUNPARAM=b dune utop lib
 
-test:
-	OCAMLRUNPARAM=b dune exec test/main.exe
+# test:
+# 	OCAMLRUNPARAM=b dune exec test/main.exe
 
-check:
-	@bash check.sh
+# check:
+# 	@bash check.sh
 
-finalcheck:
-	@bash check.sh final
+# finalcheck:
+# 	@bash check.sh final
 
-zip:
-	rm -f dna.zip
-	zip -r dna.zip . -x@exclude.lst
+# zip:
+# 	rm -f dna.zip
+# 	zip -r dna.zip . -x@exclude.lst
 
-clean:
-	dune clean
-	rm -f dna.zip
+# clean:
+# 	dune clean
+# 	rm -f dna.zip
