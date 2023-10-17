@@ -4,22 +4,36 @@
 
 build:
 	dune build
+
 code:
 	-dune build
 	code .
 	! dune build --watch
 
-# utop:
-# 	OCAMLRUNPARAM=b dune utop lib
+utop:
+	OCAMLRUNPARAM=b dune utop lib
 
-# test:
-# 	OCAMLRUNPARAM=b dune exec test/main.exe
+test:
+	OCAMLRUNPARAM=b dune exec test/suite.exe
 
-# check:
-# 	@bash check.sh
+game: 
+	OCAMLRUNPARAM=b dune exec lib/main.exe
 
-# finalcheck:
-# 	@bash check.sh final
+clean:
+	dune clean
+	rm -f 2048.zip
+
+check:
+	@bash check.sh
+
+finalcheck:
+	@bash check.sh final
+
+doc:
+	dune build @doc
+
+opendoc: doc
+	@bash opendoc.sh
 
 # zip:
 # 	rm -f dna.zip
