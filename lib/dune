@@ -1,4 +1,5 @@
 (executable
  (name main)
  (public_name Main)
+ (modules main game)
  (libraries raylib))

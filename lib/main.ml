@@ -1,19 +1,9 @@
-open Raylib
-open Color
+(* main.ml *)
 
-let setup () =
-  Raylib.init_window 800 400 "raylib [core] example - basic window";
-  Raylib.set_target_fps 60
+(* Import the Game module. This assumes game.ml is in the same directory. *)
+open Game 
 
-let rec loop () =
-  if Raylib.window_should_close () then Raylib.close_window ()
-  else
-    let open Raylib in
-    begin_drawing ();
-    clear_background Color.raywhite;
-    draw_text "Congrats! You created your first window!" 190 200 20
-      Color.lightgray;
-    end_drawing ();
-    loop ()
-
-let () = setup () |> loop
+(* Now, you can use functions from the Game module *)
+let () = 
+  setup ();  (* Call the setup function from Game module *)
+  loop ()    (* Call the loop function from Game module *)
