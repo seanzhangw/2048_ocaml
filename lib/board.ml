@@ -59,7 +59,7 @@ let draw_new_game_button () =
   in
 
   Raylib.draw_rectangle 600 100 150 50 button_color;
-  Raylib.draw_text "New Game" (600 + 20) (600 + 15) 20 Color.black
+  Raylib.draw_text "New Game" (600 + 20) (100 + 15) 20 Color.black
 
 let score = "0"
 
