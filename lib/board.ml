@@ -60,9 +60,6 @@ let draw_new_game_button () =
   Raylib.draw_rectangle 600 100 150 50 button_color;
   Raylib.draw_text "New Game" (600 + 20) (100 + 15) 20 Color.black
 
-(** Stores the current score *)
-let score = "0"
-
 (** Displays the durrent board data onto the board *)
 let display_tiles_input (tiles : int list list) =
   let extended_square_size = square_size + spacing in
@@ -116,8 +113,6 @@ let game_page () =
   (* add button for instructions *)
   (* add score counter *)
   (* add button for new game *)
-  draw_text "Score: " 600 30 30 Color.brown;
-  draw_text score 600 60 30 Color.beige;
   draw_new_game_button ();
   draw_init_grid ()
 

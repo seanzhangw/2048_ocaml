@@ -32,7 +32,9 @@ let starting_page_logic () =
 
 (** Stores the data we are displaying for the board *)
 let board =
-  ref [ [ 0; 2; 2; 0 ]; [ 0; 0; 2; 0 ]; [ 0; 0; 2; 0 ]; [ 0; 0; 0; 0 ] ]
+  ref [ [ 2; 2; 2; 2 ]; [ 2; 2; 2; 0 ]; [ 0; 0; 2; 2 ]; [ 0; 0; 0; 0 ] ]
+
+(* * Stores the current score let score = "0" *)
 
 (** Logic behind handling the button click for the new game button *)
 let check_new_game_button_click () =
@@ -50,6 +52,8 @@ let check_new_game_button_click () =
       board :=
         [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
 
+let score = ref 0
+
 (* Draws and implements the logic for the game page. Continuously checks for key
    input to reset the game *)
 let game_logic () =
@@ -57,10 +61,20 @@ let game_logic () =
   clear_background Color.raywhite;
   game_page ();
   check_new_game_button_click ();
-  if is_key_pressed Key.Left then board := calculate_next !board move_left
-  else if is_key_pressed Key.Right then
-    board := calculate_next !board move_right;
+
+  if is_key_pressed Key.Left then (
+    let new_board, score_delta = calculate_next !board move_left in
+    board := new_board;
+    score := !score + score_delta)
+  else if is_key_pressed Key.Right then (
+    let new_board, score_delta = calculate_next !board move_right in
+    board := new_board;
+    score := !score + score_delta);
+
   display_tiles_input !board;
+  draw_text "Score: " 550 30 30 Color.brown;
+  draw_text (string_of_int !score) 670 30 30 Color.beige;
+
   end_drawing ();
   Game (* You can transition to another state here if needed *)
 
