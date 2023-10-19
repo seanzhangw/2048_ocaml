@@ -19,9 +19,7 @@ let l_move row =
 
 let r_move row =
   let rev = List.rev row in
-  let compressed = l_compress rev in
-  let merged = l_merge compressed in
-  let result = l_compress merged in
+  let result = l_move rev in
   List.rev
     (result @ List.init (List.length row - List.length result) (fun _ -> 0))
 

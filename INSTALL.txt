@@ -1,0 +1,10 @@
+This project is built upon OPAM libraries of the Cornell CS 3110 class. These 
+base libraries can be installed with: 
+
+[opam install -y utop odoc ounit2 qcheck bisect_ppx menhir ocaml-lsp-server ocamlformat ocamlformat-rpc]
+
+The graphical UI for this project is dependent on Raylib. This can be installed
+with: 
+
+[opam depext raylib]
+[opam install raylib]
