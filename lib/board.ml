@@ -1,7 +1,8 @@
 open Raylib
 open Constants
 
-let draw_grid () =
+
+let draw_init_grid () =
   let extended_square_size = square_size + spacing in (* includes the size of the square plus spacing *)
 
   let grid_size = num_squares * extended_square_size in
@@ -33,6 +34,21 @@ let draw_grid () =
   done;
   ()
 
+  let draw_new_game_button () =
+    (* Check if the mouse is over the button *)
+    let mouse_x = Raylib.get_mouse_x () in
+    let mouse_y = Raylib.get_mouse_y () in
+    let is_mouse_over_button = 
+      mouse_x >= 600 && mouse_x <= 600 + 150 &&
+      mouse_y >= 100 && mouse_y <= 100 + 50
+    in
+  
+    (* Change the button's color based on mouse hover *)
+    let button_color = if is_mouse_over_button then Color.lightgray else Color.gray in
+  
+    Raylib.draw_rectangle 600 100 150 50 button_color;
+    Raylib.draw_text "New Game" (600 + 20) (600 + 15) 20 Color.black
+
   let score = "0"
 
   let game_page () = 
@@ -42,5 +58,7 @@ let draw_grid () =
     (* add button for new game *)
     draw_text "Score: " 600 30 30 Color.brown;
     draw_text score 600 60 30 Color.beige;
-    draw_grid ();
+    draw_new_game_button ();
+
+    draw_init_grid ();
 
