@@ -9,25 +9,30 @@ let starting_page () =
     Raylib.draw_text "Welcome to My Game!" 190 100 20 Color.red;
     Raylib.draw_text "Press Space to Start!" 190 130 20 Color.blue
 
-    let rec loop game_started =
-      if Raylib.window_should_close () then 
-          Raylib.close_window ()
-      else
-          let open Raylib in
-          begin_drawing ();
-          clear_background Color.raywhite;
-          let new_game_state = 
-              if game_started then (
-                  draw_text "Game Started! Do game logic here." 190 200 20 Color.green;
-                  game_started
-              ) else if is_key_pressed Key.Space then
-                  true  (* update game_started to true *)
-              else (
-                  starting_page ();
-                  game_started
-              )
-          in
-          end_drawing ();
-          loop new_game_state  (* continue looping with updated game_started state *)(* continue looping with current game_started state *)
+let rec starting_page_loop () =
+    if Raylib.window_should_close () then 
+        Raylib.close_window ()
+    else
+        begin_drawing ();
+        clear_background Color.raywhite;
+        starting_page ();
+        if is_key_pressed Key.Space then
+            game_loop ()
+        else
+            end_drawing ();
+            starting_page_loop ()
 
-let () = setup ()  (* start the game loop with game_started set to false *)
+and game_loop () =
+    if Raylib.window_should_close () then 
+        Raylib.close_window ()
+    else
+        begin_drawing ();
+        clear_background Color.raywhite;
+        (* game stuff happens here *)
+        Raylib.draw_text "Game Started! Do game logic here." 190 200 20 Color.green;
+        end_drawing ();
+        game_loop ()
+
+let () = 
+    setup ();           (* set up the game *)
+     (* start the game loop with game_started set to false *)
