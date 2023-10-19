@@ -29,6 +29,7 @@ and game_loop () =
         begin_drawing ();
         clear_background Color.raywhite;
         draw_grid ();
+        display_tiles ();
         end_drawing ();
         game_loop ()
 
