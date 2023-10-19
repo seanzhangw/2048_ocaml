@@ -78,15 +78,12 @@ let display_tiles (tiles : int list list) =
     | head :: tail -> if index = 0 then head else nth tail (index - 1)
   in
   for i = 0 to 3 do
-    let row = nth tiles i in
+    let col = nth tiles i in
     for j = 0 to 3 do
-      let x = grid_x + (i * extended_square_size) in
-      let y = grid_y + (j * extended_square_size) in
-      (* let head lst = match lst with | hd :: _ -> hd (* Return the head if the
-         list is non-empty *) | [] -> 0 in *)
-      let value = nth row j in
+      let x = grid_x + (j * extended_square_size) in
+      let y = grid_y + (i * extended_square_size) in
+      let value = nth col j in
       let show = string_of_int value in
-      (* Raylib.draw_text show x y 20 Color.black; *)
       Raylib.draw_text show
         (x + (square_size / 2) - 17)
         (y + (square_size / 2) - 30)
