@@ -10,10 +10,13 @@ type game_state =
   | Game
   | InstructionsPage
 
+(* Initiates the RayLib window with window size and frame rate *)
 let setup () =
   init_window 800 600 "raylib [core] example - basic window";
   set_target_fps 60
 
+(* Draws and implements the logic for the start page. Continuously checks for
+   key input to progress to instructions or game state *)
 let starting_page_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -26,6 +29,8 @@ let starting_page_logic () =
   end_drawing ();
   next_state
 
+(* Draws and implements the logic for the game page. Continuously checks for key
+   input to reset the game *)
 let game_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -34,6 +39,8 @@ let game_logic () =
   end_drawing ();
   Game (* You can transition to another state here if needed *)
 
+(* Draws and implements the logic for the instruction page. Continuously checks
+   for key input to return to start page or begin the game *)
 let instructions_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -46,6 +53,8 @@ let instructions_logic () =
   end_drawing ();
   next_state
 
+(* Main control loop of the game. Depending on the state of the game, a
+   different logic block is executed *)
 let rec main_loop state =
   if Raylib.window_should_close () then Raylib.close_window ()
   else
