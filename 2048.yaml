@@ -1,0 +1,33 @@
+---
+# Members of your group.
+group:
+  - name: Linda Sun
+    netid: lhs86
+  - name: Vicky Wang
+    netid: vw92
+  - name: Dora Weng
+    netid: cw749
+  - name: Sean Zhang
+  netid: swz9
+# Your PM.
+pm:
+  name: Ethan Hersch
+  netid: esh87
+# Set to false if you don't want your gallery entry to be public.
+publish: true
+# Pithy title
+title: "Walmart Version of 2048"
+# OK if this is a Cornell Github link, but public gallery viewers won't be able to see it.
+git-repo: "https://github.coecis.cornell.edu/cw749/cs3110-final-project"
+# If you have no demo screencast, replace the url string with an empty string ""
+demo-video-url: ""
+# Write a short, attention-grabbing description of your project.
+desc: >
+  Our project is an interactive calculator. It supports standard mathematical
+  operations like addition, multiplication, negation, and division on both
+  integers and floating-point numbers. The interface is completely
+  programmable--new functions can easily be defined and assigned to new "keys"
+  in the visual interface.
+
+  Standard visual I/O is supported, but the calculator can also emit sound. By
+  pressing down a special key, it can play a little melody.
