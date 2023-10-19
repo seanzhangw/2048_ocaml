@@ -4,7 +4,7 @@ open Board
 open Start
 open Constants
 open Instructions
-open Input
+open Block_logic
 
 type game_state =
   | StartingPage
@@ -64,12 +64,16 @@ let game_logic () =
 
   if is_key_pressed Key.Left then (
     let new_board, score_delta = calculate_next !board move_left in
+    let final_board = generate_block new_board in
     board := new_board;
-    score := !score + score_delta)
+    score := !score + score_delta;
+    board := final_board)
   else if is_key_pressed Key.Right then (
     let new_board, score_delta = calculate_next !board move_right in
+    let final_board = generate_block new_board in
     board := new_board;
-    score := !score + score_delta);
+    score := !score + score_delta;
+    board := final_board);
 
   display_tiles_input !board;
   draw_text "Score: " 550 30 30 Color.brown;

@@ -1,4 +1,7 @@
 open Constants
+open Random
+
+(* Block movement *)
 
 (* Helper function that removes 0's within a list and returns the compressed
    list ex. l_compress [3; 3; 0; 3] -> [3; 3; 3]*)
@@ -23,7 +26,7 @@ let rec l_merge = function
    button press in 2048. Populates rows w/ < num_squares entries w/ 0s to
    preserve the number of squares in a list. ex. l_move [2; 2; 0; 2] -> [4; 2;
    0; 0]*)
-let l_move row =
+let l_move (row : int list) : int list * int =
   let compressed = l_compress row in
   let merged, score = l_merge compressed in
   let result = l_compress merged in
@@ -33,7 +36,7 @@ let l_move row =
    button press in 2048. Populates rows w/ < num_squares entries w/ 0s to
    preserve the number of squares in a list. ex. r_move [2; 2; 0; 2] -> [0; 0;
    2; 4]*)
-let r_move row =
+let r_move (row : int list) : int list * int =
   let rev = List.rev row in
   let result, score = l_move rev in
   ( List.rev
@@ -45,7 +48,7 @@ let r_move row =
    the new board. ex. calculate_next [[2; 2; 0; 0]; [0; 0; 0; 0]; [4; 4; 8; 0];
    [0; 0; 2; 0]] move_left -> [[4; 0; 0; 0]; [0; 0; 0; 0]; [8; 8; 0; 0]; [2; 0;
    0; 0]]*)
-let calculate_next board dir =
+let calculate_next (board : int list list) (dir : int) : int list list * int =
   match dir with
   | dir when dir = move_left ->
       let moved_board, scores = List.split (List.map l_move board) in
@@ -55,5 +58,46 @@ let calculate_next board dir =
       (moved_board, List.fold_left ( + ) 0 scores)
   | _ -> failwith "TODO"
 
-(* else if dir = move_down then List.map d_move board else if dir = move_up then
-   List.map u_move board *)
+(*****************************************************************************)
+(* Random block generation *)
+
+let random_mag () =
+  let rand = Random.int 10 in
+  match rand with
+  | _ when rand = 5 -> 4
+  | _ -> 2
+
+let find_zeros (board : int list list) : (int * int list) list =
+  List.mapi
+    (fun ind_1 a ->
+      (ind_1, List.mapi (fun ind_2 b -> if b = 0 then ind_2 else -1) a))
+    board
+
+let count_empty (lst : (int * int list) list) : int =
+  List.fold_left
+    (fun acc (_, int_list) ->
+      acc + List.length (List.filter (fun x -> x >= 0) int_list))
+    0 lst
+
+let generate_block board =
+  let mag = random_mag () in
+  let zero_lst = find_zeros board in
+  let loc = Random.int (count_empty zero_lst) in
+
+  let rec find_nth_empty n lst =
+    match lst with
+    | [] -> failwith "Error: Empty list"
+    | (row, cols) :: t ->
+        let valid_cols = List.filter (fun x -> x >= 0) cols in
+        if n < List.length valid_cols then (row, List.nth valid_cols n)
+        else find_nth_empty (n - List.length valid_cols) t
+  in
+
+  let target_row, target_col = find_nth_empty loc zero_lst in
+
+  List.mapi
+    (fun i row ->
+      if i = target_row then
+        List.mapi (fun j cell -> if j = target_col then mag else cell) row
+      else row)
+    board
