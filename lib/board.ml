@@ -116,4 +116,5 @@ let game_page () =
   draw_new_game_button ();
   draw_init_grid ();
   display_tiles !board
+
 (* display_tiles board; *)
