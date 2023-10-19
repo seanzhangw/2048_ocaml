@@ -39,18 +39,33 @@ let draw_grid () =
   done;
   ()
 
-let rec loop () =
-  if window_should_close () then close_window ()
-  else
-    begin 
-      begin_drawing ();
-      clear_background Color.white;
-      draw_grid (); 
-      end_drawing ();
-      loop () 
-    end 
+let starting_page () =
+    Raylib.draw_text "Welcome to My Game!" 190 100 20 Color.red;
+    Raylib.draw_text "Press Space to Start!" 190 130 20 Color.blue
 
-(* Entry point *)
+let rec starting_page_loop () =
+    if Raylib.window_should_close () then 
+        Raylib.close_window ()
+    else
+        begin_drawing ();
+        clear_background Color.raywhite;
+        starting_page ();
+        if is_key_pressed Key.Space then
+            game_loop ()
+        else
+            end_drawing ();
+            starting_page_loop ()
+
+and game_loop () =
+    if Raylib.window_should_close () then 
+        Raylib.close_window ()
+    else
+        begin_drawing ();
+        clear_background Color.raywhite;
+        draw_grid ();
+        end_drawing ();
+        game_loop ()
+
 let () = 
-  setup (); 
-  loop ();
+    setup ();           (* set up the game *)
+     (* start the game loop with game_started set to false *)
