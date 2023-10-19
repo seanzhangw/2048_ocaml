@@ -32,7 +32,7 @@ let starting_page_logic () =
 let game_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
-  draw_grid ();
+  game_page ();
   end_drawing ();
   Game (* You can transition to another state here if needed *)
 

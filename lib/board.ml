@@ -33,4 +33,14 @@ let draw_grid () =
   done;
   ()
 
+  let score = "0"
+
+  let game_page () = 
+    draw_text "2048" 100 30 80 Color.brown;
+    (* add button for instructions *)
+    (* add score counter *)
+    (* add button for new game *)
+    draw_text "Score: " 600 30 30 Color.brown;
+    draw_text score 600 60 30 Color.beige;
+    draw_grid ();
 
