@@ -1,7 +1,8 @@
 open Raylib
 open Color
 let rec instructions () =
-    draw_text "Instructions" 200 200 30 Color.brown;
-    draw_text "These are the instructions...." 200 240 20 Color.beige;
-
-(* Return to the game loop if the Escape key is pressed *)
+    draw_text "Instructions:" 170 200 40 Color.brown;
+    draw_text "Use your arrow keys to move the tiles." 170 270 20 Color.beige;
+    draw_text "Tiles with the same number merge into" 170 300 20 Color.beige;
+    draw_text "one when they touch. Add them up to reach 2048!" 170 330 20 Color.beige;
+    draw_text "Press s to start game! " 170 400 20 Color.beige;
