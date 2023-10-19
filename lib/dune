@@ -1,5 +1,5 @@
 (executable
  (name main)
  (public_name Main)
- (modules main game constants board start)
+ (modules main game constants board start instructions)
  (libraries raylib))
