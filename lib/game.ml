@@ -4,6 +4,7 @@ open Board
 open Start
 open Constants
 open Instructions
+open Input
 
 type game_state =
   | StartingPage
@@ -29,6 +30,26 @@ let starting_page_logic () =
   end_drawing ();
   next_state
 
+(** Stores the data we are displaying for the board *)
+let board =
+  ref [ [ 0; 2; 2; 0 ]; [ 0; 0; 2; 0 ]; [ 0; 0; 2; 0 ]; [ 0; 0; 0; 0 ] ]
+
+(** Logic behind handling the button click for the new game button *)
+let check_new_game_button_click () =
+  (* If the mouse is over the button and the left mouse button is pressed *)
+  if Raylib.is_mouse_button_pressed MouseButton.Left then
+    let mouse_x = Raylib.get_mouse_x () in
+    let mouse_y = Raylib.get_mouse_y () in
+    if
+      mouse_x >= 600
+      && mouse_x <= 600 + 150
+      && mouse_y >= 100
+      && mouse_y <= 100 + 50
+    then
+      (* Reset the board to all zeroes *)
+      board :=
+        [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
 (* Draws and implements the logic for the game page. Continuously checks for key
    input to reset the game *)
 let game_logic () =
@@ -36,6 +57,10 @@ let game_logic () =
   clear_background Color.raywhite;
   game_page ();
   check_new_game_button_click ();
+  if is_key_pressed Key.Left then board := calculate_next !board move_left
+  else if is_key_pressed Key.Right then
+    board := calculate_next !board move_right;
+  display_tiles_input !board;
   end_drawing ();
   Game (* You can transition to another state here if needed *)
 

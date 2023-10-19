@@ -1,10 +1,6 @@
 open Raylib
 open Constants
 
-(** Stores the data we are displaying for the board *)
-let board =
-  ref [ [ 0; 0; 2; 0 ]; [ 0; 0; 2; 0 ]; [ 0; 0; 2; 0 ]; [ 0; 0; 0; 0 ] ]
-
 (** Draws the board without the numbers *)
 let draw_init_grid () =
   let extended_square_size = square_size + spacing in
@@ -67,22 +63,6 @@ let draw_new_game_button () =
 (** Stores the current score *)
 let score = "0"
 
-(** Logic behind handling the button click for the new game button *)
-let check_new_game_button_click () =
-  (* If the mouse is over the button and the left mouse button is pressed *)
-  if Raylib.is_mouse_button_pressed MouseButton.Left then
-    let mouse_x = Raylib.get_mouse_x () in
-    let mouse_y = Raylib.get_mouse_y () in
-    if
-      mouse_x >= 600
-      && mouse_x <= 600 + 150
-      && mouse_y >= 100
-      && mouse_y <= 100 + 50
-    then
-      (* Reset the board to all zeroes *)
-      board :=
-        [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
-
 (** Displays the durrent board data onto the board *)
 let display_tiles_input (tiles : int list list) =
   let extended_square_size = square_size + spacing in
@@ -139,8 +119,8 @@ let game_page () =
   draw_text "Score: " 600 30 30 Color.brown;
   draw_text score 600 60 30 Color.beige;
   draw_new_game_button ();
-  draw_init_grid ();
-  display_tiles_input !board
+  draw_init_grid ()
+
 (* display_tiles !board *)
 
 (* display_tiles board; *)
