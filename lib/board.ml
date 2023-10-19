@@ -1,9 +1,11 @@
 open Raylib
 open Constants
 
+(** Stores the data we are displaying for the board *)
 let board =
   ref [ [ 0; 0; 2; 0 ]; [ 0; 0; 2; 0 ]; [ 0; 0; 2; 0 ]; [ 0; 0; 0; 0 ] ]
 
+(** Draws the board without the numbers *)
 let draw_init_grid () =
   let extended_square_size = square_size + spacing in
 
@@ -42,6 +44,7 @@ let draw_init_grid () =
   done;
   ()
 
+(** Draws the new game button *)
 let draw_new_game_button () =
   (* Check if the mouse is over the button *)
   let mouse_x = Raylib.get_mouse_x () in
@@ -61,36 +64,10 @@ let draw_new_game_button () =
   Raylib.draw_rectangle 600 100 150 50 button_color;
   Raylib.draw_text "New Game" (600 + 20) (100 + 15) 20 Color.black
 
+(** Stores the current score *)
 let score = "0"
 
-let display_tiles (tiles : int list list) =
-  let extended_square_size = square_size + spacing in
-
-  (* includes the size of the square plus spacing *)
-  let grid_size = num_squares * extended_square_size in
-
-  (* Calculate positions for centering the grid on the screen *)
-  let grid_x = (screen_width - grid_size + spacing) / 2 in
-  let grid_y = ((screen_height - grid_size + spacing) / 2) + 20 in
-  let rec nth list index =
-    match list with
-    | [] -> failwith "Out of bounds"
-    | head :: tail -> if index = 0 then head else nth tail (index - 1)
-  in
-  for i = 0 to 3 do
-    let col = nth tiles i in
-    for j = 0 to 3 do
-      let x = grid_x + (j * extended_square_size) in
-      let y = grid_y + (i * extended_square_size) in
-      let value = nth col j in
-      let show = string_of_int value in
-      Raylib.draw_text show
-        (x + (square_size / 2) - 17)
-        (y + (square_size / 2) - 30)
-        70 Color.white
-    done
-  done
-
+(** Logic behind handling the button click for the new game button *)
 let check_new_game_button_click () =
   (* If the mouse is over the button and the left mouse button is pressed *)
   if Raylib.is_mouse_button_pressed MouseButton.Left then
@@ -106,6 +83,7 @@ let check_new_game_button_click () =
       board :=
         [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
 
+(** Displays the durrent board data onto the board *)
 let display_tiles_input (tiles : int list list) =
   let extended_square_size = square_size + spacing in
 
@@ -152,6 +130,7 @@ let display_tiles_input (tiles : int list list) =
     done
   done
 
+(** Calls all of the neccesary functions that displays the game page*)
 let game_page () =
   draw_text "2048" 100 30 80 Color.brown;
   (* add button for instructions *)
