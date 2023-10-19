@@ -43,6 +43,8 @@ let instructions_logic () =
   let next_state = 
     if is_key_pressed Key.Escape then
       StartingPage
+    else if is_key_pressed Key.S then
+      Game
     else
       InstructionsPage
   in
