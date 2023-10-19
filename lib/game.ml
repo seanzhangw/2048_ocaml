@@ -33,6 +33,7 @@ let game_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
+  check_new_game_button_click ();
   end_drawing ();
   Game (* You can transition to another state here if needed *)
 
