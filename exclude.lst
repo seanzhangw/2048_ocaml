@@ -1,0 +1,5 @@
+_build/*
+data/*
+.DS_Store
+*.zip
+2048.yaml

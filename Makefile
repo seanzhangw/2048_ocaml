@@ -35,9 +35,9 @@ doc:
 opendoc: doc
 	@bash opendoc.sh
 
-# zip:
-# 	rm -f dna.zip
-# 	zip -r dna.zip . -x@exclude.lst
+zip:
+	rm -f 2048.zip
+	zip -r 2048.zip . -x@exclude.lst
 
 # clean:
 # 	dune clean
