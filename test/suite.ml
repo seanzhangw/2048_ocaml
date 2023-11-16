@@ -62,6 +62,7 @@ let calculate_next_test out in1 in2 _ =
 
 let compress_tests =
   [
+    "Testing all 0" >:: compress_test [] [];
     "Testing all 0" >:: compress_test [] [ 0; 0; 0; 0 ];
     "Testing all non-empty" >:: compress_test [ 1; 1; 1; 1 ] [ 1; 1; 1; 1 ];
     "Testing 0 spreaded out" >:: compress_test [ 2; 1 ] [ 2; 0; 1; 0 ];
