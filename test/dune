@@ -1,2 +1,3 @@
-(executable
- (name suite))
+(tests
+ (names suite)
+ (libraries block ounit2))

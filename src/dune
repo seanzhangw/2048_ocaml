@@ -1,0 +1,5 @@
+(library
+ (name block)
+ (public_name block)
+ (libraries raylib)
+ (modules :standard))

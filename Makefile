@@ -17,7 +17,7 @@ test:
 	OCAMLRUNPARAM=b dune exec test/suite.exe
 
 game: 
-	OCAMLRUNPARAM=b dune exec lib/main.exe
+	OCAMLRUNPARAM=b dune exec bin/main.exe
 
 clean:
 	dune clean

@@ -1,5 +1,0 @@
-(executable
- (name main)
- (public_name Main)
- (modules main game constants board start block_logic instructions)
- (libraries raylib))
