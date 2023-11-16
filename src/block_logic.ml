@@ -122,10 +122,10 @@ let count_empty (lst : (int * int list) list) : int =
     0 lst
 
 let generate_block board =
+  Random.self_init ();
   let mag = random_mag () in
   let zero_lst = find_zeros board in
   let loc = Random.int (count_empty zero_lst) in
-
   let rec find_nth_empty n lst =
     match lst with
     | [] -> failwith "Error: Empty list"

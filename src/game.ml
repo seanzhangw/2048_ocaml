@@ -30,9 +30,12 @@ let starting_page_logic () =
   end_drawing ();
   next_state
 
-(** Stores the data we are displaying for the board *)
+(** Stores the data we are displaying for the board. Generates an initial block
+    in a random position *)
 let board =
-  ref [ [ 2; 2; 2; 2 ]; [ 2; 2; 2; 0 ]; [ 0; 0; 2; 2 ]; [ 0; 0; 0; 0 ] ]
+  ref
+    (generate_block
+       [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ])
 
 (* * Stores the current score let score = "0" *)
 
