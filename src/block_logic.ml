@@ -42,7 +42,7 @@ let l_move (row : int list) : int list * int =
    preserve the number of squares in a list. ex. r_move [2; 2; 0; 2] -> [0; 0;
    2; 4]*)
 let r_move (row : int list) : int list * int =
-  let compressed = List.rev (compress row) in
+  let compressed = compress row in
   let merged, score = r_merge compressed in
   let result_length = List.length merged in
   let padded_result =
