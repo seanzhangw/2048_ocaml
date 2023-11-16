@@ -62,18 +62,18 @@ let game_logic () =
   game_page ();
   check_new_game_button_click ();
 
-  if is_key_pressed Key.Left then (
-    let new_board, score_delta = calculate_next !board move_left in
+  let handle_move dir =
+    let new_board, score_delta = calculate_next !board dir in
     let final_board = generate_block new_board in
     board := new_board;
     score := !score + score_delta;
-    board := final_board)
-  else if is_key_pressed Key.Right then (
-    let new_board, score_delta = calculate_next !board move_right in
-    let final_board = generate_block new_board in
-    board := new_board;
-    score := !score + score_delta;
-    board := final_board);
+    board := final_board
+  in
+
+  if is_key_pressed Key.Left then handle_move move_left
+  else if is_key_pressed Key.Right then handle_move move_right
+  else if is_key_pressed Key.Up then handle_move move_up
+  else if is_key_pressed Key.Down then handle_move move_down;
 
   display_tiles_input !board;
   draw_text "Score: " 550 30 30 Color.brown;
