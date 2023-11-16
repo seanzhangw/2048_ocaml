@@ -43,6 +43,42 @@ let r_move (row : int list) : int list * int =
       (result @ List.init (List.length row - List.length result) (fun _ -> 0)),
     score )
 
+(* Helper function that transposes a matrix (list of lists) *)
+let transpose matrix =
+  match matrix with
+  | [] -> []
+  | [] :: _ -> []
+  | _ ->
+      let rec innerTranspose mat acc =
+        if List.exists (fun x -> x <> []) mat then
+          innerTranspose
+            (List.map
+               (function
+                 | [] -> []
+                 | h :: t -> t)
+               mat)
+            (List.map
+               (function
+                 | [] -> failwith "Invalid matrix"
+                 | h :: t -> h)
+               mat
+            :: acc)
+        else List.rev acc
+      in
+      innerTranspose matrix []
+
+(* Helper function that moves a board up *)
+let u_move (board : int list list) : int list list * int =
+  let transposed_board = transpose board in
+  let moved_board, scores = List.split (List.map l_move transposed_board) in
+  (transpose moved_board, List.fold_left ( + ) 0 scores)
+
+(* Helper function that moves a board down *)
+let d_move (board : int list list) : int list list * int =
+  let transposed_board = transpose board in
+  let moved_board, scores = List.split (List.map r_move transposed_board) in
+  (transpose moved_board, List.fold_left ( + ) 0 scores)
+
 (* Shifts the 4x4 board left, right, up, or down depending on the input
    parameter. The board is expected as an int list list and the function returns
    the new board. ex. calculate_next [[2; 2; 0; 0]; [0; 0; 0; 0]; [4; 4; 8; 0];
@@ -56,7 +92,13 @@ let calculate_next (board : int list list) (dir : int) : int list list * int =
   | dir when dir = move_right ->
       let moved_board, scores = List.split (List.map r_move board) in
       (moved_board, List.fold_left ( + ) 0 scores)
-  | _ -> failwith "TODO"
+  | dir when dir = move_up ->
+      let moved_board, scores = u_move board in
+      (moved_board, scores)
+  | dir when dir = move_down ->
+      let moved_board, scores = d_move board in
+      (moved_board, scores)
+  | _ -> failwith "Invalid direction"
 
 (*****************************************************************************)
 (* Random block generation *)
