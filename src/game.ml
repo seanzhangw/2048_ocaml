@@ -53,7 +53,8 @@ let check_new_game_button_click () =
     then
       (* Reset the board to all zeroes *)
       board :=
-        [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+        generate_block
+          [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
 
 let score = ref 0
 
