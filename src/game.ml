@@ -64,10 +64,13 @@ let game_logic () =
 
   let handle_move dir =
     let new_board, score_delta = calculate_next !board dir in
-    let final_board = generate_block new_board in
-    board := new_board;
-    score := !score + score_delta;
-    board := final_board
+    if new_board = !board then (
+      score := !score + score_delta;
+      board := new_board)
+    else
+      let final_board = generate_block new_board in
+      score := !score + score_delta;
+      board := final_board
   in
 
   if is_key_pressed Key.Left then handle_move move_left
