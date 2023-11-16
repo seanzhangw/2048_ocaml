@@ -4,11 +4,11 @@ open Random
 (* Block movement *)
 
 (* Helper function that removes 0's within a list and returns the compressed
-   list ex. l_compress [3; 3; 0; 3] -> [3; 3; 3]*)
-let rec l_compress = function
+   list ex. compress [3; 3; 0; 3] -> [3; 3; 3]*)
+let rec compress = function
   | [] -> []
-  | 0 :: t -> l_compress t
-  | h :: t -> h :: l_compress t
+  | 0 :: t -> compress t
+  | h :: t -> h :: compress t
 
 (* Helper function that combines equal numbers and shifts numbers to the left.
    Numbers on the left-most side receive priority. ex. l_merge [2; 2; 0; 2] ->
@@ -22,26 +22,33 @@ let rec l_merge = function
       (a :: merged_list, score)
   | [] -> ([], 0)
 
-(* Uses l_merge and l_compress to shift a row to the left to simulate a left
+let r_merge lst =
+  let reversed_lst = List.rev lst in
+  let merged, score = l_merge reversed_lst in
+  (List.rev merged, score)
+
+(* Uses l_merge and compress to shift a row to the left to simulate a left
    button press in 2048. Populates rows w/ < num_squares entries w/ 0s to
    preserve the number of squares in a list. ex. l_move [2; 2; 0; 2] -> [4; 2;
    0; 0]*)
 let l_move (row : int list) : int list * int =
-  let compressed = l_compress row in
+  let compressed = compress row in
   let merged, score = l_merge compressed in
-  let result = l_compress merged in
+  let result = compress merged in
   (result @ List.init (List.length row - List.length result) (fun _ -> 0), score)
 
-(* Uses l_merge and l_compress to shift a row to the right to simulate a right
+(* Uses r_merge and compress to shift a row to the right to simulate a right
    button press in 2048. Populates rows w/ < num_squares entries w/ 0s to
    preserve the number of squares in a list. ex. r_move [2; 2; 0; 2] -> [0; 0;
    2; 4]*)
 let r_move (row : int list) : int list * int =
-  let rev = List.rev row in
-  let result, score = l_move rev in
-  ( List.rev
-      (result @ List.init (List.length row - List.length result) (fun _ -> 0)),
-    score )
+  let compressed = List.rev (compress row) in
+  let merged, score = r_merge compressed in
+  let result_length = List.length merged in
+  let padded_result =
+    List.init (List.length row - result_length) (fun _ -> 0) @ merged
+  in
+  (padded_result, score)
 
 (* Helper function that transposes a matrix (list of lists) *)
 let transpose matrix =
