@@ -13,3 +13,6 @@ let move_down = 3
 
 (* High score *)
 let file_path = "data/high_score.json"
+
+(* Animation *)
+let block_speed = 2.0

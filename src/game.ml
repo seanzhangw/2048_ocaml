@@ -1,7 +1,6 @@
 open Raylib
 open Color
 open Board
-open Start
 open Constants
 open Instructions
 open Block_logic
