@@ -10,3 +10,6 @@ let move_left = 0
 let move_right = 1
 let move_up = 2
 let move_down = 3
+
+(* High score *)
+let file_path = "data/high_score.json"
