@@ -1,3 +1,11 @@
+open Unix
+
+(* Function to create a directory *)
+let create_directory dir_name =
+  try mkdir dir_name 0o755 with
+  | Unix_error (EEXIST, _, _) -> ()
+  | e -> raise e
+
 let write_to_file filename content =
   let channel = open_out filename in
   output_string channel content;
@@ -15,5 +23,6 @@ let read_highscore filename =
       close_in_noerr ic;
       0
   with e ->
+    create_directory "data";
     write_to_file filename "0";
     0
