@@ -11,6 +11,9 @@ type game_state =
   | Game
   | InstructionsPage
 
+let score = ref 0
+let high_score = ref 0
+
 (* Initiates the RayLib window with window size and frame rate *)
 let setup () =
   init_window 800 600 "raylib [core] example - basic window";
@@ -42,7 +45,7 @@ let board =
 (** Logic behind handling the button click for the new game button *)
 let check_new_game_button_click () =
   (* If the mouse is over the button and the left mouse button is pressed *)
-  if Raylib.is_mouse_button_pressed MouseButton.Left then
+  if Raylib.is_mouse_button_pressed MouseButton.Left then (
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
     if
@@ -54,9 +57,8 @@ let check_new_game_button_click () =
       (* Reset the board to all zeroes *)
       board :=
         generate_block
-          [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
-
-let score = ref 0
+          [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ];
+    score := 0)
 
 (* Draws and implements the logic for the game page. Continuously checks for key
    input to reset the game *)
@@ -76,6 +78,8 @@ let game_logic () =
       score := !score + score_delta;
       board := final_board
   in
+  if !score > !high_score then high_score := !score
+  else high_score := !high_score;
 
   if is_key_pressed Key.Left then handle_move move_left
   else if is_key_pressed Key.Right then handle_move move_right
@@ -83,8 +87,10 @@ let game_logic () =
   else if is_key_pressed Key.Down then handle_move move_down;
 
   display_tiles_input !board;
-  draw_text "Score: " 550 30 30 Color.brown;
-  draw_text (string_of_int !score) 670 30 30 Color.beige;
+  draw_text "Score: " 530 30 30 Color.brown;
+  draw_text (string_of_int !score) 730 30 30 Color.beige;
+  draw_text "High Score: " 530 70 30 Color.brown;
+  draw_text (string_of_int !score) 730 70 30 Color.beige;
 
   end_drawing ();
   Game (* You can transition to another state here if needed *)
