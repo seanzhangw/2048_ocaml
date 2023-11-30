@@ -13,3 +13,7 @@ let move_down = 3
 
 (* High score *)
 let file_path = "data/high_score.json"
+
+(* Audio *)
+let block_move_sound = Raylib.load_music_stream "resources/block.mp3"
+let button_click_sound = Raylib.load_music_stream "resources/button.mp3"

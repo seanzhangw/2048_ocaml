@@ -13,9 +13,7 @@ type game_state =
   | InstructionsPage
 
 let score = ref 0
-let block_move_sound = Raylib.load_music_stream "resources/block.mp3"
-let button_click_sound = Raylib.load_music_stream "resources/button.mp3"
-let high_score = ref (Utils.read_highscore Constants.file_path)
+let high_score = ref (read_highscore file_path)
 
 (* Initiates the RayLib window with window size and frame rate *)
 let setup () =
