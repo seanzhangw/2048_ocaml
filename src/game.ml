@@ -12,12 +12,23 @@ type game_state =
   | InstructionsPage
 
 let score = ref 0
+let block_move_sound = Raylib.load_music_stream "resources/block.mp3"
+let button_click_sound = Raylib.load_music_stream "resources/button.mp3"
 let high_score = ref 0
 
 (* Initiates the RayLib window with window size and frame rate *)
 let setup () =
   init_window 800 600 "raylib [core] example - basic window";
-  set_target_fps 60
+  set_target_fps 60;
+  play_music_stream button_click_sound
+
+let init_audio () =
+  Raylib.init_audio_device ();
+  if Raylib.is_audio_device_ready () then
+    Printf.printf "Audio device is ready.\n"
+  else Printf.printf "Audio device is not ready.\n"
+
+(* let play_sound sound = Raylib.play_sound sound *)
 
 (* Draws and implements the logic for the start page. Continuously checks for
    key input to progress to instructions or game state *)
@@ -26,8 +37,12 @@ let starting_page_logic () =
   clear_background Color.raywhite;
   starting_page ();
   let next_state =
-    if is_key_pressed Key.Space then Game
-    else if is_key_pressed Key.I then InstructionsPage
+    if is_key_pressed Key.Space then (
+      play_music_stream button_click_sound;
+      Game)
+    else if is_key_pressed Key.I then (
+      play_music_stream button_click_sound;
+      InstructionsPage)
     else StartingPage
   in
   end_drawing ();
@@ -46,6 +61,7 @@ let board =
 let check_new_game_button_click () =
   (* If the mouse is over the button and the left mouse button is pressed *)
   if Raylib.is_mouse_button_pressed MouseButton.Left then (
+    play_music_stream button_click_sound;
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
     if
@@ -113,14 +129,23 @@ let instructions_logic () =
    different logic block is executed *)
 let rec main_loop state =
   if Raylib.window_should_close () then Raylib.close_window ()
-  else
-    let next_state =
-      match state with
-      | StartingPage -> starting_page_logic ()
-      | Game -> game_logic ()
-      | InstructionsPage -> instructions_logic ()
-    in
-    main_loop next_state
+  else Raylib.update_music_stream button_click_sound;
+  Raylib.update_music_stream block_move_sound;
+  let next_state =
+    match state with
+    | StartingPage -> starting_page_logic ()
+    | Game -> game_logic ()
+    | InstructionsPage -> instructions_logic ()
+  in
+  main_loop next_state
 
-let () = setup ()
+let close_game () =
+  Raylib.unload_music_stream button_click_sound;
+  Raylib.unload_music_stream block_move_sound;
+  Raylib.close_audio_device ()
+
+let () =
+  init_audio ();
+  setup ();
+  close_game ()
 (* start the main loop with the StartingPage state *)

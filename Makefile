@@ -42,6 +42,7 @@ zip:
 count:
 	dune clean
 	cloc --by-file --include-lang=OCaml .
+	dune build
 
 # clean:
 # 	dune clean
