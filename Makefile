@@ -39,6 +39,10 @@ zip:
 	rm -f 2048.zip
 	zip -r 2048.zip . -x@exclude.lst
 
+count:
+	dune clean
+	cloc --by-file --include-lang=OCaml .
+
 # clean:
 # 	dune clean
 # 	rm -f dna.zip

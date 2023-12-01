@@ -100,37 +100,52 @@ let compress_tests =
   ]
 
 let list_of_zeros = [ 0; 0; 0; 0 ]
+let list_of_two_zeros = [ 0; 0 ]
 let basic_merge_left_input = [ 2; 2; 2; 0 ]
+let basic_merge_left_output = [ 4; 2; 0 ]
 let no_merge_left_input = [ 2; 4; 2; 4 ]
+let no_merge_left_output = [ 2; 4; 2; 4 ]
 let multiple_merge_left_input = [ 2; 2; 4; 4 ]
+let multiple_merge_left_output = [ 4; 8 ]
 let merge_leading_zero_left_input = [ 0; 2; 2; 8 ]
+let merge_leading_zero_left_output = [ 0; 4; 8 ]
 let basic_merge_right_input = [ 2; 2; 2; 0 ]
+let basic_merge_right_output = [ 2; 4; 0 ]
 let no_merge_right_input = [ 2; 4; 2; 4 ]
+let no_merge_right_output = [ 2; 4; 2; 4 ]
 let multiple_merge_right_input = [ 4; 4; 2; 2 ]
+let multiple_merge_right_output = [ 8; 4 ]
 let merge_trailing_zero_right_input = [ 8; 2; 2; 0 ]
+let merge_trailing_zero_right_output = [ 8; 4; 0 ]
 
 let merge_tests =
   [
     "Testing list of 0s lists with left merge"
-    >:: l_merge_test ([ 0; 0 ], 0) list_of_zeros;
+    >:: l_merge_test (list_of_two_zeros, 0) list_of_zeros;
     "Basic merge with left merge"
-    >:: l_merge_test ([ 4; 2; 0 ], 4) basic_merge_left_input;
+    >:: l_merge_test (basic_merge_left_output, 4) basic_merge_left_input;
     "No merge with left merge"
-    >:: l_merge_test ([ 2; 4; 2; 4 ], 0) no_merge_left_input;
+    >:: l_merge_test (no_merge_left_output, 0) no_merge_left_input;
     "Multiple merges with left merge"
-    >:: l_merge_test ([ 4; 8 ], 12) multiple_merge_left_input;
+    >:: l_merge_test (multiple_merge_left_output, 12) multiple_merge_left_input;
     "Merge with leading zero in left merge"
-    >:: l_merge_test ([ 0; 4; 8 ], 4) merge_leading_zero_left_input;
+    >:: l_merge_test
+          (merge_leading_zero_left_output, 4)
+          merge_leading_zero_left_input;
     "Testing list of 0s with right merge"
-    >:: r_merge_test ([ 0; 0 ], 0) list_of_zeros;
+    >:: r_merge_test (list_of_two_zeros, 0) list_of_zeros;
     "Basic merge with right merge"
-    >:: r_merge_test ([ 2; 4; 0 ], 4) basic_merge_right_input;
+    >:: r_merge_test (basic_merge_right_output, 4) basic_merge_right_input;
     "No merge with right merge"
-    >:: r_merge_test ([ 2; 4; 2; 4 ], 0) no_merge_right_input;
+    >:: r_merge_test (no_merge_right_output, 0) no_merge_right_input;
     "Multiple merges with right merge"
-    >:: r_merge_test ([ 8; 4 ], 12) multiple_merge_right_input;
+    >:: r_merge_test
+          (multiple_merge_right_output, 12)
+          multiple_merge_right_input;
     "Merge with trailing zero in right merge"
-    >:: r_merge_test ([ 8; 4; 0 ], 4) merge_trailing_zero_right_input;
+    >:: r_merge_test
+          (merge_trailing_zero_right_output, 4)
+          merge_trailing_zero_right_input;
   ]
 
 let left_move_input = [ 2; 2; 0; 2 ]
