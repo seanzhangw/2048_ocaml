@@ -5,6 +5,7 @@ open Start
 open Constants
 open Instructions
 open Block_logic
+open Utils
 
 type game_state =
   | StartingPage
@@ -14,7 +15,7 @@ type game_state =
 let score = ref 0
 let block_move_sound = Raylib.load_music_stream "resources/block.mp3"
 let button_click_sound = Raylib.load_music_stream "resources/button.mp3"
-let high_score = ref 0
+let high_score = ref (Utils.read_highscore Constants.file_path)
 
 (* Initiates the RayLib window with window size and frame rate *)
 let setup () =
@@ -74,7 +75,8 @@ let check_new_game_button_click () =
       board :=
         generate_initial
           [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ];
-    score := 0)
+    score := 0;
+    Utils.write_to_file Constants.file_path (string_of_int !high_score))
 
 (* Draws and implements the logic for the game page. Continuously checks for key
    input to reset the game *)
@@ -106,7 +108,7 @@ let game_logic () =
   draw_text "Score: " 530 30 30 Color.brown;
   draw_text (string_of_int !score) 730 30 30 Color.beige;
   draw_text "High Score: " 530 70 30 Color.brown;
-  draw_text (string_of_int !score) 730 70 30 Color.beige;
+  draw_text (string_of_int !high_score) 730 70 30 Color.beige;
 
   end_drawing ();
   Game (* You can transition to another state here if needed *)
