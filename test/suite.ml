@@ -206,6 +206,19 @@ let matrix2 = [ [ 1; 0; 1; 0 ]; [ 0; 1; 0; 1 ]; [ 1; 0; 1; 0 ]; [ 0; 1; 0; 1 ] ]
 let matrix2t =
   [ [ 1; 0; 1; 0 ]; [ 0; 1; 0; 1 ]; [ 1; 0; 1; 0 ]; [ 0; 1; 0; 1 ] ]
 
+let single_row_matrix = [ [ 1; 2; 3; 4 ] ]
+let single_row_matrix_t = [ [ 1 ]; [ 2 ]; [ 3 ]; [ 4 ] ]
+let single_column_matrix = [ [ 1 ]; [ 2 ]; [ 3 ]; [ 4 ] ]
+let single_column_matrix_t = [ [ 1; 2; 3; 4 ] ]
+let large_matrix = [ [ 1; 2; 3 ]; [ 4; 5; 6 ]; [ 7; 8; 9 ]; [ 10; 11; 12 ] ]
+let large_matrix_t = [ [ 1; 4; 7; 10 ]; [ 2; 5; 8; 11 ]; [ 3; 6; 9; 12 ] ]
+let unequal_row_col_matrix = [ [ 1; 2; 3 ]; [ 4; 5; 6 ] ]
+let unequal_row_col_matrix_t = [ [ 1; 4 ]; [ 2; 5 ]; [ 3; 6 ] ]
+let negative_values_matrix = [ [ -1; -2; -3 ]; [ -4; -5; -6 ]; [ -7; -8; -9 ] ]
+
+let negative_values_matrix_t =
+  [ [ -1; -4; -7 ]; [ -2; -5; -8 ]; [ -3; -6; -9 ] ]
+
 let transpose_tests =
   [
     "Testing transpose on identity matrix"
@@ -215,6 +228,16 @@ let transpose_tests =
     "Testing transpose on non-empty matrix" >:: transpose_test matrix1 matrix1t;
     "Testing transpose on non-empty matrix with zeros"
     >:: transpose_test matrix2 matrix2t;
+    "Testing transpose of a single row matrix"
+    >:: transpose_test single_row_matrix single_row_matrix_t;
+    "Testing transpose of a single column matrix"
+    >:: transpose_test single_column_matrix single_column_matrix_t;
+    "Testing transpose of a large matrix"
+    >:: transpose_test large_matrix large_matrix_t;
+    "Testing transpose of an unequal row and column matrix"
+    >:: transpose_test unequal_row_col_matrix unequal_row_col_matrix_t;
+    "Testing transpose of a matrix with negative values"
+    >:: transpose_test negative_values_matrix negative_values_matrix_t;
   ]
 
 let identity_matrix_r =
