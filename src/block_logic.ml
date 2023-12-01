@@ -126,3 +126,31 @@ let generate_block board =
         List.mapi (fun j cell -> if j = target_col then mag else cell) row
       else row)
     board
+
+let generate_initial board =
+  Random.self_init ();
+
+  let random_mag () = if Random.float 1. < 0.9 then 2 else 4 in
+
+  let generate_single_block board =
+    let mag = random_mag () in
+    let zero_lst = find_zeros board in
+    let loc = Random.int (count_empty zero_lst) in
+    let rec find_nth_empty n lst =
+      match lst with
+      | [] -> failwith "Error: Empty list"
+      | (row, cols) :: t ->
+          let valid_cols = List.filter (fun x -> x >= 0) cols in
+          if n < List.length valid_cols then (row, List.nth valid_cols n)
+          else find_nth_empty (n - List.length valid_cols) t
+    in
+    let target_row, target_col = find_nth_empty loc zero_lst in
+    List.mapi
+      (fun i row ->
+        if i = target_row then
+          List.mapi (fun j cell -> if j = target_col then mag else cell) row
+        else row)
+      board
+  in
+
+  generate_single_block (generate_single_block board)

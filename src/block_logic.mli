@@ -66,3 +66,7 @@ val count_empty : (int * int list) list -> int
 (* Generates a random block within the board in a random location with a
    magnitude of either 4 or 2*)
 val generate_block : int list list -> int list list
+
+(* Generate an initial board that has two blocks (either 4 or 2) in a random
+   location on the board*)
+val generate_initial : int list list -> int list list

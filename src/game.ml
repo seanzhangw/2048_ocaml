@@ -37,7 +37,7 @@ let starting_page_logic () =
     in a random position *)
 let board =
   ref
-    (generate_block
+    (generate_initial
        [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ])
 
 (* * Stores the current score let score = "0" *)
@@ -56,7 +56,7 @@ let check_new_game_button_click () =
     then
       (* Reset the board to all zeroes *)
       board :=
-        generate_block
+        generate_initial
           [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ];
     score := 0)
 
