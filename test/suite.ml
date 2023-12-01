@@ -1,6 +1,7 @@
 open OUnit2
 open Block
 open Block_logic
+open Constants
 
 let pp_pair pp_l pp_r (l, r) = Printf.sprintf "(%s, %s)" (pp_l l) (pp_r r)
 
@@ -148,7 +149,76 @@ let transpose_tests =
     >:: transpose_test matrix2 matrix2t;
   ]
 
-let calculate_next_tests = []
+let identity_matrix_r =
+  [ [ 0; 0; 0; 1 ]; [ 0; 0; 0; 1 ]; [ 0; 0; 0; 1 ]; [ 0; 0; 0; 1 ] ]
+
+let identity_matrix_l =
+  [ [ 1; 0; 0; 0 ]; [ 1; 0; 0; 0 ]; [ 1; 0; 0; 0 ]; [ 1; 0; 0; 0 ] ]
+
+let identity_matrix_u =
+  [ [ 1; 1; 1; 1 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let identity_matrix_d =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 1; 1; 1; 1 ] ]
+
+let alternate_values_matrix =
+  [ [ 2; 0; 2; 0 ]; [ 0; 4; 0; 4 ]; [ 2; 0; 2; 0 ]; [ 0; 4; 0; 4 ] ]
+
+let alternate_values_matrix_r =
+  [ [ 0; 0; 0; 4 ]; [ 0; 0; 0; 8 ]; [ 0; 0; 0; 4 ]; [ 0; 0; 0; 8 ] ]
+
+let alternate_values_matrix_l =
+  [ [ 4; 0; 0; 0 ]; [ 8; 0; 0; 0 ]; [ 4; 0; 0; 0 ]; [ 8; 0; 0; 0 ] ]
+
+let alternate_values_matrix_u =
+  [ [ 4; 8; 4; 8 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let alternate_values_matrix_d =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 4; 8; 4; 8 ] ]
+
+let no_movement_matrix =
+  [ [ 2; 4; 8; 16 ]; [ 16; 8; 4; 2 ]; [ 2; 4; 8; 16 ]; [ 16; 8; 4; 2 ] ]
+
+let calculate_next_tests =
+  [
+    "Testing calculate next on empty matrix with right"
+    >:: calculate_next_test (zero_matrix, 0) zero_matrix move_right;
+    "Testing calculate next on empty matrix with left"
+    >:: calculate_next_test (zero_matrix, 0) zero_matrix move_left;
+    "Testing calculate next on empty matrix with up"
+    >:: calculate_next_test (zero_matrix, 0) zero_matrix move_up;
+    "Testing calculate next on empty matrix with down"
+    >:: calculate_next_test (zero_matrix, 0) zero_matrix move_down;
+    "Testing calculate next on empty matrix with right"
+    >:: calculate_next_test (identity_matrix_r, 0) identity_matrix move_right;
+    "Testing calculate next on empty matrix with left"
+    >:: calculate_next_test (identity_matrix_l, 0) identity_matrix move_left;
+    "Testing calculate next on empty matrix with up"
+    >:: calculate_next_test (identity_matrix_u, 0) identity_matrix move_up;
+    "Testing calculate next on empty matrix with down"
+    >:: calculate_next_test (identity_matrix_d, 0) identity_matrix move_down;
+    "Testing calculate next on alternate valued matrix with right"
+    >:: calculate_next_test
+          (alternate_values_matrix_r, 24)
+          alternate_values_matrix move_right;
+    "Testing calculate next on alternate valued matrix with left"
+    >:: calculate_next_test
+          (alternate_values_matrix_l, 24)
+          alternate_values_matrix move_left;
+    "Testing calculate next on alternate valued matrix with up"
+    >:: calculate_next_test
+          (alternate_values_matrix_u, 24)
+          alternate_values_matrix move_up;
+    "Testing calculate next on alternate valued matrix with down"
+    >:: calculate_next_test
+          (alternate_values_matrix_d, 24)
+          alternate_values_matrix move_down;
+    "Testing calculate next on matrix that doesnt change with right"
+    >:: calculate_next_test (no_movement_matrix, 0) no_movement_matrix
+          move_right;
+    "Testing calculate next on matrix that doesnt change with left"
+    >:: calculate_next_test (no_movement_matrix, 0) no_movement_matrix move_left;
+  ]
 
 let tests =
   "test suite"
