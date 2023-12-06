@@ -26,9 +26,7 @@ let starting_page_logic () =
   clear_background Color.raywhite;
   starting_page ();
   let next_state =
-    if is_key_pressed Key.Space then Game
-    else if is_key_pressed Key.I then InstructionsPage
-    else StartingPage
+    if is_key_pressed Key.I then InstructionsPage else StartingPage
   in
   end_drawing ();
   next_state
@@ -103,7 +101,7 @@ let instructions_logic () =
   instructions ();
   let next_state =
     if is_key_pressed Key.Escape then StartingPage
-    else if is_key_pressed Key.S then Game
+    else if is_key_pressed Key.O then Game
     else InstructionsPage
   in
   end_drawing ();

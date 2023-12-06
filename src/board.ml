@@ -10,7 +10,7 @@ let draw_init_grid () =
 
   (* Calculate positions for centering the grid on the screen *)
   let grid_x = (screen_width - grid_size + spacing) / 2 in
-  let grid_y = ((screen_height - grid_size + spacing) / 2) + 30 in
+  let grid_y = ((screen_height - grid_size + spacing) / 2) + 40 in
 
   (* Set location for dark gray squares including the margin area *)
   for i = 0 to num_squares - 1 do
@@ -71,7 +71,7 @@ let display_tiles_input (tiles : int list list) =
 
   (* Calculate positions for centering the grid on the screen *)
   let grid_x = (screen_width - grid_size + spacing) / 2 in
-  let grid_y = ((screen_height - grid_size + spacing) / 2) + 30 in
+  let grid_y = ((screen_height - grid_size + spacing) / 2) + 40 in
   let rec nth list index =
     match list with
     | [] -> failwith "Out of bounds"
