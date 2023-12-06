@@ -90,7 +90,7 @@ let game_logic () =
   draw_text "Score " 300 37 15 Color.brown;
   draw_text (string_of_int !score) 300 57 47 Color.beige;
   draw_text "High Score " 450 37 15 Color.brown;
-  draw_text (string_of_int !score) 450 57 47 Color.beige;
+  draw_text (string_of_int !high_score) 450 57 47 Color.beige;
 
   end_drawing ();
   Game (* You can transition to another state here if needed *)
