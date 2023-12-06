@@ -1,5 +1,4 @@
-(** Block logic *)
-
+open Block
 (** This file handles block movement, random block generation, and block
     merging. *)
 
@@ -58,15 +57,15 @@ val calculate_next : int list list -> int -> int list list * int
 val random_mag : unit -> int
 
 (* Finds the locations of the empty blocks (0's) within the board *)
-val find_zeros : int list list -> (int * int list) list
+val find_zeros : block list list -> (int * int) list
 
 (* Returns the number of empty blocks within the board *)
-val count_empty : (int * int list) list -> int
+val count_empty : block list list -> int
 
 (* Generates a random block within the board in a random location with a
    magnitude of either 4 or 2*)
-val generate_block : int list list -> int list list
+val generate_block : block list list -> block list list
 
 (* Generate an initial board that has two blocks (either 4 or 2) in a random
    location on the board*)
-val generate_initial : int list list -> int list list
+val generate_initial : unit -> block list list

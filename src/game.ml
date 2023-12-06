@@ -1,6 +1,7 @@
 open Raylib
 open Color
 open Board
+open Block
 open Constants
 open Instructions
 open Block_logic
@@ -13,6 +14,9 @@ type game_state =
 
 let score = ref 0
 let high_score = ref (Utils.read_highscore Constants.file_path)
+
+(*Stores the data we are displaying for the board.*)
+let board = ref (generate_initial ())
 
 (* Initiates the RayLib window with window size and frame rate *)
 let setup () =
@@ -33,13 +37,6 @@ let starting_page_logic () =
   end_drawing ();
   next_state
 
-(** Stores the data we are displaying for the board. Generates an initial block
-    in a random position *)
-let board =
-  ref
-    (generate_initial
-       [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ])
-
 (* * Stores the current score let score = "0" *)
 
 (** Logic behind handling the button click for the new game button *)
@@ -53,11 +50,8 @@ let check_new_game_button_click () =
       && mouse_x <= 600 + 150
       && mouse_y >= 100
       && mouse_y <= 100 + 50
-    then
-      (* Reset the board to all zeroes *)
-      board :=
-        generate_initial
-          [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ];
+    then (* Reset the board to all zeroes *)
+      board := generate_initial ();
     score := 0;
     Utils.write_to_file Constants.file_path (string_of_int !high_score))
 
@@ -86,7 +80,6 @@ let game_logic () =
   else if is_key_pressed Key.Right then handle_move move_right
   else if is_key_pressed Key.Up then handle_move move_up
   else if is_key_pressed Key.Down then handle_move move_down;
-
   display_tiles_input !board;
   draw_text "Score: " 530 30 30 Color.brown;
   draw_text (string_of_int !score) 730 30 30 Color.beige;

@@ -1,5 +1,6 @@
 open Raylib
 open Constants
+open Block
 
 (** Draws the board without the numbers *)
 let draw_init_grid () =
@@ -61,51 +62,43 @@ let draw_new_game_button () =
   Raylib.draw_text "New Game" (600 + 20) (100 + 15) 20 Color.black
 
 (** Displays the durrent board data onto the board *)
-let display_tiles_input (tiles : int list list) =
-  let extended_square_size = square_size + spacing in
-
-  (* includes the size of the square plus spacing *)
-  let grid_size = num_squares * extended_square_size in
-
-  (* Calculate positions for centering the grid on the screen *)
-  let grid_x = (screen_width - grid_size + spacing) / 2 in
-  let grid_y = ((screen_height - grid_size + spacing) / 2) + 20 in
-  let rec nth list index =
-    match list with
-    | [] -> failwith "Out of bounds"
-    | head :: tail -> if index = 0 then head else nth tail (index - 1)
+let display_tiles_input (tiles : block list list) =
+  let color_of_value value =
+    match value with
+    | 2 -> Raylib.Color.skyblue
+    | 4 -> Raylib.Color.blue
+    | 8 -> Raylib.Color.darkblue
+    | 16 -> Raylib.Color.darkpurple
+    | 32 -> Raylib.Color.purple
+    | 64 -> Raylib.Color.violet
+    | 128 -> Raylib.Color.maroon
+    | 256 -> Raylib.Color.magenta
+    | 512 -> Raylib.Color.pink
+    | 1024 -> Raylib.Color.orange
+    | 2048 -> Raylib.Color.red
+    | _ -> Raylib.Color.beige
   in
-  for i = 0 to 3 do
-    let col = nth tiles i in
-    for j = 0 to 3 do
-      let x = grid_x + (j * extended_square_size) in
-      let y = grid_y + (i * extended_square_size) in
-      let value = nth col j in
-      let color_of_value value =
-        match value with
-        | 2 -> Raylib.Color.skyblue
-        | 4 -> Raylib.Color.blue
-        | 8 -> Raylib.Color.darkblue
-        | 16 -> Raylib.Color.darkpurple
-        | 32 -> Raylib.Color.purple
-        | 64 -> Raylib.Color.violet
-        | 128 -> Raylib.Color.maroon
-        | 256 -> Raylib.Color.magenta
-        | 512 -> Raylib.Color.pink
-        | 1024 -> Raylib.Color.orange
-        | 2048 -> Raylib.Color.red
-        | _ -> Raylib.Color.beige
-      in
-      Raylib.draw_rectangle x y square_size square_size (color_of_value value);
-
-      let show = string_of_int value in
-      if value <> 0 then
-        Raylib.draw_text show
-          (x + (square_size / 2) - (Raylib.measure_text show 30 / 2))
-          (y + (square_size / 2) - 15)
-          30 Raylib.Color.white
-    done
-  done
+  List.iteri
+    (fun i row ->
+      List.iteri
+        (fun j block ->
+          let x, y = block.current_pos in
+          (* print_endline (string_of_float x); print_endline (string_of_float
+             y); *)
+          let x = int_of_float x in
+          let y = int_of_float y in
+          let value = block.value in
+          Raylib.draw_rectangle x y square_size square_size
+            (color_of_value value);
+          print_endline (string_of_int value);
+          let show = string_of_int value in
+          if value <> 0 then
+            Raylib.draw_text show
+              (x + (square_size / 2) - (Raylib.measure_text show 30 / 2))
+              (y + (square_size / 2) - 15)
+              30 Raylib.Color.white)
+        row)
+    tiles
 
 (** Calls all of the neccesary functions that displays the game page*)
 let game_page () =

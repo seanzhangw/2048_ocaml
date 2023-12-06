@@ -1,6 +1,3 @@
-open Raylib
-open Constants
-
 type block = {
   value : int;
   mutable current_pos : float * float; (* x, y *)
@@ -12,6 +9,30 @@ and block_state =
   | Stationary
   | Moving of float (* movement progress *)
   | Merging
+
+let empty_block (value : int) : block =
+  {
+    value = 0;
+    current_pos = (0., 0.);
+    target_pos = (0., 0.);
+    state = Stationary;
+  }
+
+let place_block (value : int) (pos : int * int) : block =
+  {
+    value;
+    current_pos = Constants.block_position_mapping pos;
+    target_pos = (0., 0.);
+    state = Stationary;
+  }
+
+let empty_board =
+  [
+    [ empty_block 0; empty_block 0; empty_block 0; empty_block 0 ];
+    [ empty_block 0; empty_block 0; empty_block 0; empty_block 0 ];
+    [ empty_block 0; empty_block 0; empty_block 0; empty_block 0 ];
+    [ empty_block 0; empty_block 0; empty_block 0; empty_block 0 ];
+  ]
 
 let update_block block delta_time =
   let interpolate x_cur x_target y_cur y_target progress =

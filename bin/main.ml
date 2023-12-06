@@ -1,7 +1,7 @@
 (* main.ml *)
 
 (* Import the Game module. This assumes game.ml is in the same directory. *)
-open Block
+open G2048
 open Game
 
 (* Now, you can use functions from the Game module *)
