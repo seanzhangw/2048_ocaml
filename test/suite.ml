@@ -61,64 +61,132 @@ let d_move_test out in1 _ =
 let calculate_next_test out in1 in2 _ =
   assert_equal ~printer:pp_matrix_int_pair out (calculate_next in1 in2)
 
+let single_one_list = [ 1 ]
+let ones_list = [ 1; 1; 1; 1 ]
+let one_to_four_list = [ 1; 2; 3; 4 ]
+let one_to_three_list = [ 1; 2; 3 ]
+let one_two_list = [ 1; 2 ]
+let all_zeros = [ 0; 0; 0; 0 ]
+let single_zero = [ 0 ]
+let spread_zeros = [ 2; 0; 1; 0 ]
+let alternating_zeros = [ 0; 1; 0; 2; 0; 3; 0 ]
+let all_zeros_except_one = [ 0; 0; 1; 0; 0 ]
+let zeros_at_start = [ 0; 0; 1; 2 ]
+let zeros_at_end = [ 1; 2; 0; 0 ]
+let zero_on_left = [ 0; 1; 2; 3 ]
+let zero_on_right = [ 1; 2; 3; 0 ]
+
 let compress_tests =
   [
     "Testing all 0" >:: compress_test [] [];
-    "Testing all 0" >:: compress_test [] [ 0; 0; 0; 0 ];
-    "Testing single zero" >:: compress_test [] [ 0 ];
-    "Testing single non-zero" >:: compress_test [ 1 ] [ 1 ];
-    "Testing all non-empty" >:: compress_test [ 1; 1; 1; 1 ] [ 1; 1; 1; 1 ];
+    "Testing all 0" >:: compress_test [] all_zeros;
+    "Testing single zero" >:: compress_test [] single_zero;
+    "Testing single non-zero" >:: compress_test single_one_list single_one_list;
+    "Testing all non-empty" >:: compress_test ones_list ones_list;
     "Testing non-zero elements only"
-    >:: compress_test [ 1; 2; 3; 4 ] [ 1; 2; 3; 4 ];
-    "Testing 0 spreaded out" >:: compress_test [ 2; 1 ] [ 2; 0; 1; 0 ];
+    >:: compress_test one_to_four_list one_to_four_list;
+    "Testing 0 spreaded out"
+    >:: compress_test (List.rev one_two_list) spread_zeros;
     "Testing alternating zeros and non-zeros"
-    >:: compress_test [ 1; 2; 3 ] [ 0; 1; 0; 2; 0; 3; 0 ];
-    "Testing all zeros except one" >:: compress_test [ 1 ] [ 0; 0; 1; 0; 0 ];
-    "Testing zeros at start" >:: compress_test [ 1; 2 ] [ 0; 0; 1; 2 ];
-    "Testing zeros at end" >:: compress_test [ 1; 2 ] [ 1; 2; 0; 0 ];
-    "Testing 0 only on the left" >:: compress_test [ 1; 2; 3 ] [ 0; 1; 2; 3 ];
-    "Testing 0 only on the right" >:: compress_test [ 1; 2; 3 ] [ 1; 2; 3; 0 ];
+    >:: compress_test one_to_three_list alternating_zeros;
+    "Testing all zeros except one"
+    >:: compress_test single_one_list all_zeros_except_one;
+    "Testing zeros at start" >:: compress_test one_two_list zeros_at_start;
+    "Testing zeros at end" >:: compress_test one_two_list zeros_at_end;
+    "Testing 0 only on the left"
+    >:: compress_test one_to_three_list zero_on_left;
+    "Testing 0 only on the right"
+    >:: compress_test one_to_three_list zero_on_right;
   ]
+
+let list_of_zeros = [ 0; 0; 0; 0 ]
+let list_of_two_zeros = [ 0; 0 ]
+let basic_merge_left_input = [ 2; 2; 2; 0 ]
+let basic_merge_left_output = [ 4; 2; 0 ]
+let no_merge_left_input = [ 2; 4; 2; 4 ]
+let no_merge_left_output = [ 2; 4; 2; 4 ]
+let multiple_merge_left_input = [ 2; 2; 4; 4 ]
+let multiple_merge_left_output = [ 4; 8 ]
+let merge_leading_zero_left_input = [ 0; 2; 2; 8 ]
+let merge_leading_zero_left_output = [ 0; 4; 8 ]
+let basic_merge_right_input = [ 2; 2; 2; 0 ]
+let basic_merge_right_output = [ 2; 4; 0 ]
+let no_merge_right_input = [ 2; 4; 2; 4 ]
+let no_merge_right_output = [ 2; 4; 2; 4 ]
+let multiple_merge_right_input = [ 4; 4; 2; 2 ]
+let multiple_merge_right_output = [ 8; 4 ]
+let merge_trailing_zero_right_input = [ 8; 2; 2; 0 ]
+let merge_trailing_zero_right_output = [ 8; 4; 0 ]
 
 let merge_tests =
   [
     "Testing list of 0s lists with left merge"
-    >:: l_merge_test ([ 0; 0 ], 0) [ 0; 0; 0; 0 ];
+    >:: l_merge_test (list_of_two_zeros, 0) list_of_zeros;
     "Basic merge with left merge"
-    >:: l_merge_test ([ 4; 2; 0 ], 4) [ 2; 2; 2; 0 ];
+    >:: l_merge_test (basic_merge_left_output, 4) basic_merge_left_input;
     "No merge with left merge"
-    >:: l_merge_test ([ 2; 4; 2; 4 ], 0) [ 2; 4; 2; 4 ];
+    >:: l_merge_test (no_merge_left_output, 0) no_merge_left_input;
     "Multiple merges with left merge"
-    >:: l_merge_test ([ 4; 8 ], 12) [ 2; 2; 4; 4 ];
+    >:: l_merge_test (multiple_merge_left_output, 12) multiple_merge_left_input;
     "Merge with leading zero in left merge"
-    >:: l_merge_test ([ 0; 4; 8 ], 4) [ 0; 2; 2; 8 ];
+    >:: l_merge_test
+          (merge_leading_zero_left_output, 4)
+          merge_leading_zero_left_input;
     "Testing list of 0s with right merge"
-    >:: r_merge_test ([ 0; 0 ], 0) [ 0; 0; 0; 0 ];
+    >:: r_merge_test (list_of_two_zeros, 0) list_of_zeros;
     "Basic merge with right merge"
-    >:: r_merge_test ([ 2; 4; 0 ], 4) [ 2; 2; 2; 0 ];
+    >:: r_merge_test (basic_merge_right_output, 4) basic_merge_right_input;
     "No merge with right merge"
-    >:: r_merge_test ([ 2; 4; 2; 4 ], 0) [ 2; 4; 2; 4 ];
+    >:: r_merge_test (no_merge_right_output, 0) no_merge_right_input;
     "Multiple merges with right merge"
-    >:: r_merge_test ([ 8; 4 ], 12) [ 4; 4; 2; 2 ];
+    >:: r_merge_test
+          (multiple_merge_right_output, 12)
+          multiple_merge_right_input;
     "Merge with trailing zero in right merge"
-    >:: r_merge_test ([ 8; 4; 0 ], 4) [ 8; 2; 2; 0 ];
+    >:: r_merge_test
+          (merge_trailing_zero_right_output, 4)
+          merge_trailing_zero_right_input;
   ]
+
+let left_move_input = [ 2; 2; 0; 2 ]
+let left_move_output = [ 4; 2; 0; 0 ]
+let left_move_with_merge_input = [ 2; 2; 0; 0 ]
+let left_move_with_merge_output = [ 4; 0; 0; 0 ]
+let left_move_no_merge_input = [ 2; 0; 4; 2 ]
+let left_move_no_merge_output = [ 2; 4; 2; 0 ]
+let left_move_complex_merge_input = [ 2; 2; 2; 2 ]
+let left_move_complex_merge_output = [ 4; 4; 0; 0 ]
+let right_move_input = [ 2; 2; 0; 2 ]
+let right_move_output = [ 0; 0; 2; 4 ]
+let right_move_with_merge_input = [ 2; 2; 0; 0 ]
+let right_move_with_merge_output = [ 0; 0; 0; 4 ]
+let right_move_no_merge_input = [ 2; 0; 4; 2 ]
+let right_move_no_merge_output = [ 0; 2; 4; 2 ]
+let right_move_complex_merge_input = [ 2; 2; 2; 2 ]
+let right_move_complex_merge_output = [ 0; 0; 4; 4 ]
 
 let move_tests =
   [
-    "Testing left move" >:: l_move_test ([ 4; 2; 0; 0 ], 4) [ 2; 2; 0; 2 ];
+    "Testing left move" >:: l_move_test (left_move_output, 4) left_move_input;
     "Left move with merge and trailing zeros"
-    >:: l_move_test ([ 4; 0; 0; 0 ], 4) [ 2; 2; 0; 0 ];
-    "Left move with no merge" >:: l_move_test ([ 2; 4; 2; 0 ], 0) [ 2; 0; 4; 2 ];
+    >:: l_move_test (left_move_with_merge_output, 4) left_move_with_merge_input;
+    "Left move with no merge"
+    >:: l_move_test (left_move_no_merge_output, 0) left_move_no_merge_input;
     "Left move with complex merge"
-    >:: l_move_test ([ 4; 4; 0; 0 ], 8) [ 2; 2; 2; 2 ];
-    "Testing right move" >:: r_move_test ([ 0; 0; 2; 4 ], 4) [ 2; 2; 0; 2 ];
+    >:: l_move_test
+          (left_move_complex_merge_output, 8)
+          left_move_complex_merge_input;
+    "Testing right move" >:: r_move_test (right_move_output, 4) right_move_input;
     "Right move with merge and leading zeros"
-    >:: r_move_test ([ 0; 0; 0; 4 ], 4) [ 2; 2; 0; 0 ];
+    >:: r_move_test
+          (right_move_with_merge_output, 4)
+          right_move_with_merge_input;
     "Right move with no merge"
-    >:: r_move_test ([ 0; 2; 4; 2 ], 0) [ 2; 0; 4; 2 ];
+    >:: r_move_test (right_move_no_merge_output, 0) right_move_no_merge_input;
     "Right move with complex merge"
-    >:: r_move_test ([ 0; 0; 4; 4 ], 8) [ 2; 2; 2; 2 ];
+    >:: r_move_test
+          (right_move_complex_merge_output, 8)
+          right_move_complex_merge_input;
   ]
 
 let identity_matrix =
@@ -138,6 +206,19 @@ let matrix2 = [ [ 1; 0; 1; 0 ]; [ 0; 1; 0; 1 ]; [ 1; 0; 1; 0 ]; [ 0; 1; 0; 1 ] ]
 let matrix2t =
   [ [ 1; 0; 1; 0 ]; [ 0; 1; 0; 1 ]; [ 1; 0; 1; 0 ]; [ 0; 1; 0; 1 ] ]
 
+let single_row_matrix = [ [ 1; 2; 3; 4 ] ]
+let single_row_matrix_t = [ [ 1 ]; [ 2 ]; [ 3 ]; [ 4 ] ]
+let single_column_matrix = [ [ 1 ]; [ 2 ]; [ 3 ]; [ 4 ] ]
+let single_column_matrix_t = [ [ 1; 2; 3; 4 ] ]
+let large_matrix = [ [ 1; 2; 3 ]; [ 4; 5; 6 ]; [ 7; 8; 9 ]; [ 10; 11; 12 ] ]
+let large_matrix_t = [ [ 1; 4; 7; 10 ]; [ 2; 5; 8; 11 ]; [ 3; 6; 9; 12 ] ]
+let unequal_row_col_matrix = [ [ 1; 2; 3 ]; [ 4; 5; 6 ] ]
+let unequal_row_col_matrix_t = [ [ 1; 4 ]; [ 2; 5 ]; [ 3; 6 ] ]
+let negative_values_matrix = [ [ -1; -2; -3 ]; [ -4; -5; -6 ]; [ -7; -8; -9 ] ]
+
+let negative_values_matrix_t =
+  [ [ -1; -4; -7 ]; [ -2; -5; -8 ]; [ -3; -6; -9 ] ]
+
 let transpose_tests =
   [
     "Testing transpose on identity matrix"
@@ -147,6 +228,16 @@ let transpose_tests =
     "Testing transpose on non-empty matrix" >:: transpose_test matrix1 matrix1t;
     "Testing transpose on non-empty matrix with zeros"
     >:: transpose_test matrix2 matrix2t;
+    "Testing transpose of a single row matrix"
+    >:: transpose_test single_row_matrix single_row_matrix_t;
+    "Testing transpose of a single column matrix"
+    >:: transpose_test single_column_matrix single_column_matrix_t;
+    "Testing transpose of a large matrix"
+    >:: transpose_test large_matrix large_matrix_t;
+    "Testing transpose of an unequal row and column matrix"
+    >:: transpose_test unequal_row_col_matrix unequal_row_col_matrix_t;
+    "Testing transpose of a matrix with negative values"
+    >:: transpose_test negative_values_matrix negative_values_matrix_t;
   ]
 
 let identity_matrix_r =

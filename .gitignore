@@ -1,3 +1,4 @@
 _build
 2048.yaml
 *.zip
+data/high_score.json
