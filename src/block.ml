@@ -26,10 +26,25 @@ let place_block (value : int) (pos : int * int) : block =
     state = Stationary;
   }
 
+let print_block_list_list board =
+  List.iteri
+    (fun i row ->
+      List.iteri
+        (fun j block ->
+          Printf.printf "Block at (%d, %d) - Value: %d, Position: (%f, %f)\n" i
+            j block.value (fst block.current_pos) (snd block.current_pos))
+        row)
+    board
+
 let empty_board =
   [
-    [ empty_block 0; empty_block 0; empty_block 0; empty_block 0 ];
-    [ empty_block 0; empty_block 0; empty_block 0; empty_block 0 ];
+    [
+      place_block 2 (0, 0);
+      place_block 2 (1, 0);
+      place_block 2 (2, 0);
+      place_block 2 (3, 0);
+    ];
+    [ place_block 2 (0, 1); empty_block 0; empty_block 0; empty_block 0 ];
     [ empty_block 0; empty_block 0; empty_block 0; empty_block 0 ];
     [ empty_block 0; empty_block 0; empty_block 0; empty_block 0 ];
   ]

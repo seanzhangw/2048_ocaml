@@ -90,7 +90,7 @@ let display_tiles_input (tiles : block list list) =
           let value = block.value in
           Raylib.draw_rectangle x y square_size square_size
             (color_of_value value);
-          print_endline (string_of_int value);
+          (* print_endline (string_of_int value); *)
           let show = string_of_int value in
           if value <> 0 then
             Raylib.draw_text show

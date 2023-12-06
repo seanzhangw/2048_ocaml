@@ -50,8 +50,10 @@ let check_new_game_button_click () =
       && mouse_x <= 600 + 150
       && mouse_y >= 100
       && mouse_y <= 100 + 50
-    then (* Reset the board to all zeroes *)
-      board := generate_initial ();
+    then
+      (* Reset the board to all zeroes *)
+      (* board := generate_initial (); *)
+      board := empty_board;
     score := 0;
     Utils.write_to_file Constants.file_path (string_of_int !high_score))
 
