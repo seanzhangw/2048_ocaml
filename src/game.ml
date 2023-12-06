@@ -49,10 +49,10 @@ let check_new_game_button_click () =
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
     if
-      mouse_x >= 600
-      && mouse_x <= 600 + 150
-      && mouse_y >= 100
-      && mouse_y <= 100 + 50
+      mouse_x >= 615
+      && mouse_x <= 615 + 150
+      && mouse_y >= 37
+      && mouse_y <= 37 + 58
     then
       (* Reset the board to all zeroes *)
       board :=
@@ -87,10 +87,10 @@ let game_logic () =
   else if is_key_pressed Key.Down then handle_move move_down;
 
   display_tiles_input !board;
-  draw_text "Score: " 530 30 30 Color.brown;
-  draw_text (string_of_int !score) 730 30 30 Color.beige;
-  draw_text "High Score: " 530 70 30 Color.brown;
-  draw_text (string_of_int !score) 730 70 30 Color.beige;
+  draw_text "Score " 300 37 15 Color.brown;
+  draw_text (string_of_int !score) 300 57 47 Color.beige;
+  draw_text "High Score " 450 37 15 Color.brown;
+  draw_text (string_of_int !score) 450 57 47 Color.beige;
 
   end_drawing ();
   Game (* You can transition to another state here if needed *)
