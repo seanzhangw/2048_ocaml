@@ -11,7 +11,7 @@ code:
 	! dune build --watch
 
 utop:
-	OCAMLRUNPARAM=b dune utop lib
+	OCAMLRUNPARAM=b dune utop src
 
 test:
 	OCAMLRUNPARAM=b dune exec test/suite.exe
@@ -38,6 +38,11 @@ opendoc: doc
 zip:
 	rm -f 2048.zip
 	zip -r 2048.zip . -x@exclude.lst
+
+count:
+	dune clean
+	cloc --by-file --include-lang=OCaml .
+	dune build
 
 # clean:
 # 	dune clean
