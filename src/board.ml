@@ -79,40 +79,37 @@ let draw_new_game_button () =
   Raylib.draw_rectangle 615 37 150 58 button_color;
   Raylib.draw_text "New Game" (615 + 26) (37 + 20) 20 button_text
 
+let draw_block (block : block) (size : int) =
+  let x, y = block.current_pos in
+  let x = int_of_float x in
+  let y = int_of_float y in
+  let value = block.value in
+  if x != 0 && y != 0 && value != 0 then
+    Raylib.draw_rectangle x y size size (color_mapping value);
+  let show = string_of_int value in
+  if value <> 0 then
+    Raylib.draw_text show
+      (x + (square_size / 2) - (Raylib.measure_text show 30 / 2))
+      (y + (square_size / 2) - 15)
+      30 Raylib.Color.white
+
 (** Displays the durrent board data onto the board *)
-let display_tiles_input (tiles : block list list) =
-  let color_of_value value =
-    match value with
-    | 2 -> Raylib.Color.skyblue
-    | 4 -> Raylib.Color.blue
-    | 8 -> Raylib.Color.darkblue
-    | 16 -> Raylib.Color.darkpurple
-    | 32 -> Raylib.Color.purple
-    | 64 -> Raylib.Color.violet
-    | 128 -> Raylib.Color.maroon
-    | 256 -> Raylib.Color.magenta
-    | 512 -> Raylib.Color.pink
-    | 1024 -> Raylib.Color.orange
-    | 2048 -> Raylib.Color.red
-    | _ -> Raylib.Color.beige
+let rec display_tiles_input (tiles : block list list) =
+  let render_movement block = draw_block block square_size in
+  let render_emerge block progress =
+    if progress < initial_block_factor then
+      draw_block block
+        (int_of_float (float_of_int square_size *. initial_block_factor))
+    else draw_block block (int_of_float (float_of_int square_size *. progress))
   in
   List.iteri
     (fun i row ->
       List.iteri
         (fun j block ->
-          let x, y = block.current_pos in
-          let x = int_of_float x in
-          let y = int_of_float y in
-          let value = block.value in
-          if x != 0 && y != 0 && value != 0 then
-            Raylib.draw_rectangle x y square_size square_size
-              (color_of_value value);
-          let show = string_of_int value in
-          if value <> 0 then
-            Raylib.draw_text show
-              (x + (square_size / 2) - (Raylib.measure_text show 30 / 2))
-              (y + (square_size / 2) - 15)
-              30 Raylib.Color.white)
+          match block.state with
+          | Moving _ -> render_movement block
+          | Emerging progress -> render_emerge block progress
+          | _ -> render_movement block)
         row)
     tiles
 

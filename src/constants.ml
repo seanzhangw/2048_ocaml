@@ -1,9 +1,23 @@
-(* Screen dimensions *)
+(* Screen dimensions & display *)
 let screen_width = 800
 let screen_height = 600
 let num_squares = 4
 let square_size = 80
 let spacing = 7
+
+let color_mapping = function
+  | 2 -> Raylib.Color.skyblue
+  | 4 -> Raylib.Color.blue
+  | 8 -> Raylib.Color.darkblue
+  | 16 -> Raylib.Color.darkpurple
+  | 32 -> Raylib.Color.purple
+  | 64 -> Raylib.Color.violet
+  | 128 -> Raylib.Color.maroon
+  | 256 -> Raylib.Color.magenta
+  | 512 -> Raylib.Color.pink
+  | 1024 -> Raylib.Color.orange
+  | 2048 -> Raylib.Color.red
+  | _ -> Raylib.Color.beige
 
 (* Control constants *)
 let move_left = 0
@@ -17,7 +31,8 @@ let file_path = "data/high_score.json"
 (* Animation *)
 let move_cooldown = 0.15
 let block_speed = 2.0
-let block_scaling = 2.0
+let initial_block_factor = 0.4
+let block_scaling = 5.0
 
 let block_position_mapping = function
   | 0, 0 -> (229., 169.)
