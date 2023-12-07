@@ -25,8 +25,8 @@ let is_tetris_initialized = ref false
 
 (* Initiates the RayLib window with window size and frame rate *)
 let setup () =
-  init_window 800 600 "raylib [core] example - basic window";
-  set_target_fps 60
+  init_window screen_width screen_height "raylib [core] example - basic window";
+  set_target_fps fps
 
 (* Placeholder initialization *)
 let init_board () = Array.make_matrix 5 4 0
@@ -56,10 +56,10 @@ let check_home_page_button_click state =
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
     if
-      mouse_x >= 37
-      && mouse_x <= 37 + 184
-      && mouse_y >= 30
-      && mouse_y <= 30 + 56
+      mouse_x >= home_pos_x
+      && mouse_x <= home_pos_x + home_width
+      && mouse_y >= home_pos_y
+      && mouse_y <= home_pos_y + home_height
     then (
       (* Reset the board *)
       board := generate_initial ();
@@ -76,10 +76,10 @@ let check_new_game_button_click () =
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
     if
-      mouse_x >= 615
-      && mouse_x <= 615 + 150
-      && mouse_y >= 37
-      && mouse_y <= 37 + 58
+      mouse_x >= new_pos_x
+      && mouse_x <= new_pos_x + new_width
+      && mouse_y >= new_pos_y
+      && mouse_y <= new_pos_y + new_height
     then (* Reset the board *)
       board := generate_initial ();
     score := 0;
@@ -161,10 +161,13 @@ let rec game_logic current_time delta_time =
   animate delta_time;
 
   display_tiles_input !board;
-  draw_text "Score " 300 37 15 Color.brown;
-  draw_text (string_of_int !score) 300 57 47 Color.beige;
-  draw_text "High Score " 450 37 15 Color.brown;
-  draw_text (string_of_int !high_score) 450 57 47 Color.beige;
+  draw_text "Score " score_label_pos_x score_label_pos_y score_label_size
+    Color.brown;
+  draw_text (string_of_int !score) score_pos_x score_pos_y score_size
+    Color.beige;
+  draw_text "High Score " hs_label_pos_x hs_label_pos_y hs_label_size
+    Color.brown;
+  draw_text (string_of_int !high_score) hs_pos_x hs_pos_y hs_size Color.beige;
 
   end_drawing ();
   next_state
@@ -214,7 +217,7 @@ let rec main_loop last_time state =
     in
     let frame_end_time = gettimeofday () in
     let frame_duration = frame_end_time -. current_time in
-    let frame_target = 1.0 /. 60.0 in
+    let frame_target = 1.0 /. float_of_int fps in
     let sleep_duration = max 0.0 (frame_target -. frame_duration) in
     ignore (select [] [] [] sleep_duration);
 

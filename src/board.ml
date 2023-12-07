@@ -3,7 +3,7 @@ open Constants
 open Block
 
 type block = Block.block
-(** Draws the board without the numbers *)
+
 let draw_init_grid () =
   let extended_square_size = square_size + spacing in
 
@@ -48,15 +48,19 @@ let draw_home_page_button () =
   let mouse_x = Raylib.get_mouse_x () in
   let mouse_y = Raylib.get_mouse_y () in
   let is_mouse_over_button =
-    mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y >= 30 && mouse_y <= 30 + 56
+    mouse_x >= home_pos_x
+    && mouse_x <= home_pos_x + home_width
+    && mouse_y >= home_pos_y
+    && mouse_y <= home_pos_y + home_height
   in
 
   (* Change the button's color based on mouse hover *)
   let button_text =
     if is_mouse_over_button then Color.darkbrown else Color.brown
   in
-  Raylib.draw_rectangle 37 38 184 56 Color.raywhite;
-  Raylib.draw_text "2048" 37 30 80 button_text
+  Raylib.draw_rectangle home_pos_x home_pos_x home_width home_height
+    Color.raywhite;
+  Raylib.draw_text "2048" home_pos_x home_pos_y home_text_size button_text
 
 (** Draws new game button *)
 let draw_new_game_button () =
@@ -64,10 +68,10 @@ let draw_new_game_button () =
   let mouse_x = Raylib.get_mouse_x () in
   let mouse_y = Raylib.get_mouse_y () in
   let is_mouse_over_button =
-    mouse_x >= 615
-    && mouse_x <= 615 + 150
-    && mouse_y >= 37
-    && mouse_y <= 37 + 58
+    mouse_x >= new_pos_x
+    && mouse_x <= new_pos_x + new_width
+    && mouse_y >= new_pos_y
+    && mouse_y <= new_pos_y + new_height
   in
 
   (* Change the button's color based on mouse hover *)
@@ -77,8 +81,9 @@ let draw_new_game_button () =
   let button_text =
     if is_mouse_over_button then Color.lightgray else Color.white
   in
-  Raylib.draw_rectangle 615 37 150 58 button_color;
-  Raylib.draw_text "New Game" (615 + 26) (37 + 20) 20 button_text
+  Raylib.draw_rectangle new_pos_x new_pos_y new_width new_height button_color;
+  Raylib.draw_text "New Game" (new_pos_x + 26) (new_pos_y + 20) new_text_size
+    button_text
 
 let draw_block (block : block) (size : int) =
   let x, y = block.current_pos in
