@@ -38,7 +38,11 @@ let board =
     (generate_initial
        [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ])
 
-(* * Stores the current score let score = "0" *)
+(*Check is button clicked to return to the homepage*)
+(* let check_home_page_button_click () = if Raylib.is_mouse_button_pressed
+   MouseButton.Left then let mouse_x = Raylib.get_mouse_x () in let mouse_y =
+   Raylib.get_mouse_y () in if mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y
+   >= 30 && mouse_y <= 30 + 56 then StartingPage else Game else Game *)
 
 (** Logic behind handling the button click for the new game button *)
 let check_new_game_button_click () =
@@ -64,6 +68,7 @@ let game_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
+  (* check_home_page_button_click (); *)
   check_new_game_button_click ();
 
   let handle_move dir =

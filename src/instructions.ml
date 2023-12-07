@@ -15,7 +15,7 @@ let rec instructions () =
   draw_text "one when they touch. Add them up to reach 2048!"
     (screen_width - 678) (screen_height - 340) 20 Color.beige;
   (*Game instrcutions 2*)
-  draw_text "Game Mode 2: Tetric Ver. (t to start)" (screen_width - 680)
+  draw_text "Game Mode 2: Tetris Ver. (t to start)" (screen_width - 680)
     (screen_height - 290) 20 Color.brown;
   draw_text "The gameplay is same like the original Tetris game."
     (screen_width - 680) (screen_height - 240) 20 Color.beige;

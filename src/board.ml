@@ -40,7 +40,23 @@ let draw_init_grid () =
   done;
   ()
 
-(** Draws the button *)
+(* Draw new home page button*)
+let draw_home_page_button () =
+  (* Check if the mouse is over the button *)
+  let mouse_x = Raylib.get_mouse_x () in
+  let mouse_y = Raylib.get_mouse_y () in
+  let is_mouse_over_button =
+    mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y >= 30 && mouse_y <= 30 + 56
+  in
+
+  (* Change the button's color based on mouse hover *)
+  let button_text =
+    if is_mouse_over_button then Color.darkbrown else Color.brown
+  in
+  Raylib.draw_rectangle 37 38 184 56 Color.raywhite;
+  Raylib.draw_text "2048" 37 30 80 button_text
+
+(** Draws new game button *)
 let draw_new_game_button () =
   (* Check if the mouse is over the button *)
   let mouse_x = Raylib.get_mouse_x () in
@@ -112,8 +128,8 @@ let display_tiles_input (tiles : int list list) =
 (** Calls all of the neccesary functions that displays the game page*)
 let game_page () =
   draw_text "2048" 37 30 80 Color.brown;
+  draw_home_page_button ();
   (* add button for instructions *)
-  (* add score counter *)
   (* add button for new game *)
   draw_new_game_button ();
   draw_init_grid ()
