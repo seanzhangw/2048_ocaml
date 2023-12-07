@@ -4,6 +4,7 @@ open Board
 open Block
 open Constants
 open Instructions
+open Start
 open Block_logic
 
 type game_state =
