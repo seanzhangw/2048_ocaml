@@ -43,7 +43,7 @@ val transpose : 'a list list -> 'a list list
 
 (* Similar to l_move. Only difference is correct_pos_state_laterial is not
    called *)
-val up_move_aux : block list -> unit
+val up_move_aux : block list -> block list * int
 
 (* Uses transpose and horizontal move functions to simulate an up button press
    in 2048. Populates rows w/ < num_squares entries w/ 0s to preserve the number
@@ -53,7 +53,7 @@ val u_move : block list list -> block list list * int
 
 (* Similar to r_move. Only difference is correct_pos_state_laterial is not
    called *)
-val down_move_aux : block list -> unit
+val down_move_aux : block list -> block list * int
 
 (* Uses transpose and horizontal move functions to simulate an down button press
    in 2048. Populates rows w/ < num_squares entries w/ 0s to preserve the number
