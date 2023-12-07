@@ -39,10 +39,18 @@ let board =
        [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ])
 
 (*Check is button clicked to return to the homepage*)
-(* let check_home_page_button_click () = if Raylib.is_mouse_button_pressed
-   MouseButton.Left then let mouse_x = Raylib.get_mouse_x () in let mouse_y =
-   Raylib.get_mouse_y () in if mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y
-   >= 30 && mouse_y <= 30 + 56 then StartingPage else Game else Game *)
+let check_home_page_button_click () =
+  if Raylib.is_mouse_button_pressed MouseButton.Left then
+    let mouse_x = Raylib.get_mouse_x () in
+    let mouse_y = Raylib.get_mouse_y () in
+    if
+      mouse_x >= 37
+      && mouse_x <= 37 + 184
+      && mouse_y >= 30
+      && mouse_y <= 30 + 56
+    then StartingPage
+    else Game
+  else Game
 
 (** Logic behind handling the button click for the new game button *)
 let check_new_game_button_click () =
@@ -68,7 +76,8 @@ let game_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
-  (* check_home_page_button_click (); *)
+  let next_state = check_home_page_button_click () in
+  (* Update the state based on button click *)
   check_new_game_button_click ();
 
   let handle_move dir =
@@ -96,7 +105,7 @@ let game_logic () =
   draw_text (string_of_int !high_score) 450 57 47 Color.beige;
 
   end_drawing ();
-  Game (* You can transition to another state here if needed *)
+  next_state (* Return the updated state *)
 
 (* Draws and implements the logic for the instruction page. Continuously checks
    for key input to return to start page or begin the game *)
