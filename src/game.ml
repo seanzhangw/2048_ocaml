@@ -88,13 +88,7 @@ let check_new_game_button_click () =
 let animate delta_time =
   List.iter
     (fun row ->
-      List.iter
-        (fun block ->
-          match block.state with
-          | Stationary -> ()
-          | Blank -> ()
-          | _ -> update_block block delta_time)
-        row)
+      List.iter (fun block -> Block.update_block block delta_time) row)
     !board;
 
   display_tiles_input !board

@@ -2,6 +2,7 @@ open Raylib
 open Constants
 open Block
 
+type block = Block.block
 (** Draws the board without the numbers *)
 let draw_init_grid () =
   let extended_square_size = square_size + spacing in
@@ -83,7 +84,7 @@ let draw_block (block : block) (size : int) =
   let x, y = block.current_pos in
   let x = int_of_float x in
   let y = int_of_float y in
-  let value = block.value in
+  let value = Block.get_value block in
   if x != 0 && y != 0 && value != 0 then
     Raylib.draw_rectangle x y size size (color_mapping value);
   let show = string_of_int value in
@@ -106,7 +107,7 @@ let rec display_tiles_input (tiles : block list list) =
     (fun i row ->
       List.iteri
         (fun j block ->
-          match block.state with
+          match Block.get_state block with
           | Moving _ -> render_movement block
           | Emerging progress -> render_emerge block progress
           | _ -> render_movement block)

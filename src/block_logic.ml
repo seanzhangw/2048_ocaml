@@ -3,44 +3,51 @@ open Block
 open Random
 
 (* Block movement *)
+type block = Block.block
+
 let rec compress = function
   | [] -> []
-  | h :: t when h.value = 0 -> compress t
+  | h :: t when Block.get_value h = 0 -> compress t
   | h :: t -> h :: compress t
 
 let correct_pos_state_lateral (row_n : int) (row : block list) : unit =
   for i = 0 to num_squares - 1 do
-    let current_block = List.nth row i in
-    current_block.target_pos <- block_position_mapping (i, row_n);
+    let cur_block = List.nth row i in
+    Block.set_target_grid_pos cur_block i row_n;
+    let cur_pos = Block.get_current_actual_pos cur_block in
+    let target_pos = Block.get_target_actual_pos cur_block in
     if
-      fst current_block.current_pos != fst current_block.target_pos
-      || snd current_block.current_pos != snd current_block.target_pos
-         && current_block.state != Blank
-    then current_block.state <- Moving 0.
-    else current_block.state <- Stationary
+      fst cur_pos != fst target_pos
+      || (snd cur_pos != snd target_pos && Block.get_state cur_block != Blank)
+    then Block.set_state cur_block (Moving 0.)
+    else Block.set_state cur_block Stationary
   done
 
 let correct_pos_state_vertical (board : block list list) : unit =
   for i = 0 to num_squares - 1 do
     for j = 0 to num_squares - 1 do
-      let current_block = List.nth (List.nth board i) j in
-      current_block.target_pos <- block_position_mapping (j, i);
+      let cur_block = List.nth (List.nth board i) j in
+      Block.set_target_grid_pos cur_block j i;
+      let cur_pos = Block.get_current_actual_pos cur_block in
+      let target_pos = Block.get_target_actual_pos cur_block in
       if
-        (fst current_block.current_pos != fst current_block.target_pos
-        || snd current_block.current_pos != snd current_block.target_pos)
-        && current_block.state != Blank
-      then current_block.state <- Moving 0.
-      else current_block.state <- Stationary
+        (fst cur_pos != fst target_pos || snd cur_pos != snd target_pos)
+        && Block.get_state cur_block != Blank
+      then Block.set_state cur_block (Moving 0.)
+      else Block.set_state cur_block Stationary
     done
   done
 
 let rec l_merge = function
-  | a :: b :: t when a.value = b.value ->
+  | a :: b :: t when Block.get_value a = Block.get_value b ->
       let merged_list, score = l_merge t in
       let merged_block =
-        { a with value = a.value + b.value; state = Merging }
+        Block.set_value a (Block.get_value a + Block.get_value b);
+        Block.set_state a Merging;
+        a
       in
-      (merged_block :: merged_list, a.value + b.value + score)
+      ( merged_block :: merged_list,
+        Block.get_value a + Block.get_value b + score )
   | a :: t ->
       let merged_list, score = l_merge t in
       (a :: merged_list, score)
@@ -58,14 +65,7 @@ let l_move (row_n : int) (row : block list) : block list * int =
   let padding =
     List.init
       (List.length row - List.length result)
-      (fun n ->
-        {
-          value = 0;
-          current_pos =
-            Constants.block_position_mapping (n + List.length result, row_n);
-          target_pos = (0.0, 0.0);
-          state = Blank;
-        })
+      (fun n -> Block.place_blank_block 0 (n + List.length result, row_n))
   in
   correct_pos_state_lateral row_n (result @ padding);
   (result @ padding, score)
@@ -77,13 +77,7 @@ let r_move (row_n : int) (row : block list) : block list * int =
   let padding =
     List.init
       (List.length row - result_length)
-      (fun n ->
-        {
-          value = 0;
-          current_pos = block_position_mapping (n, row_n);
-          target_pos = (0.0, 0.0);
-          state = Blank;
-        })
+      (fun n -> Block.place_blank_block 0 (n, row_n))
   in
   correct_pos_state_lateral row_n (padding @ merged);
   (padding @ merged, score)
@@ -118,13 +112,7 @@ let up_move_aux (row : block list) =
   let padding =
     List.init
       (List.length row - List.length result)
-      (fun n ->
-        {
-          value = 0;
-          current_pos = (0.0, 0.0);
-          target_pos = (0.0, 0.0);
-          state = Blank;
-        })
+      (fun n -> Block.place_blank_block 0 (0, 0))
   in
   (result @ padding, score)
 
@@ -144,13 +132,7 @@ let down_move_aux (row : block list) =
   let padding =
     List.init
       (List.length row - result_length)
-      (fun n ->
-        {
-          value = 0;
-          current_pos = (0.0, 0.0);
-          target_pos = (0.0, 0.0);
-          state = Blank;
-        })
+      (fun n -> Block.place_blank_block 0 (0, 0))
   in
   (padding @ merged, score)
 
@@ -192,7 +174,8 @@ let find_zeros (board : block list list) : (int * int) list =
     (fun row_index row ->
       List.fold_left
         (fun acc (col_index, block) ->
-          if block.value = 0 then (row_index, col_index) :: acc else acc)
+          if Block.get_value block = 0 then (row_index, col_index) :: acc
+          else acc)
         []
         (List.mapi (fun col_index block -> (col_index, block)) row))
     board
@@ -203,7 +186,7 @@ let count_empty (board : block list list) : int =
     (fun acc row ->
       acc
       + List.fold_left
-          (fun acc block -> if block.value = 0 then acc + 1 else acc)
+          (fun acc block -> if Block.get_value block = 0 then acc + 1 else acc)
           0 row)
     0 board
 
@@ -223,13 +206,11 @@ let generate_block board =
         if i = target_row then
           List.mapi
             (fun j cell ->
-              if j = target_col then
-                {
-                  current_pos = Constants.block_position_mapping (j, i);
-                  target_pos = Constants.block_position_mapping (j, i);
-                  value = mag;
-                  state = Emerging 0.;
-                }
+              if j = target_col then (
+                let block = Block.place_block mag (j, i) in
+                Block.set_target_grid_pos block j i;
+                Block.set_state block (Emerging 0.);
+                block)
               else cell)
             row
         else row)
@@ -253,12 +234,12 @@ let generate_initial () =
   let rec get_random_empty_position board =
     let row = Random.int 4 in
     let col = Random.int 4 in
-    match List.nth (List.nth board row) col with
-    | { value = 0; _ } -> (col, row)
-    | _ -> get_random_empty_position board
+    let block = List.nth (List.nth board row) col in
+    if Block.get_value block = 0 then (col, row)
+    else get_random_empty_position board
   in
 
-  let board = empty_board in
+  let board = Block.empty_board in
   let row1, col1 = get_random_empty_position board in
   let board = set_block board row1 col1 (random_mag ()) in
   let row2, col2 = get_random_empty_position board in
