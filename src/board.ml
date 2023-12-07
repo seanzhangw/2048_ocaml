@@ -4,7 +4,6 @@ open Block
 
 (** Draws the board without the numbers *)
 let draw_init_grid () =
-  print_endline "HERE DUBMASS";
   let extended_square_size = square_size + spacing in
 
   (* includes the size of the square plus spacing *)
@@ -85,14 +84,12 @@ let display_tiles_input (tiles : block list list) =
       List.iteri
         (fun j block ->
           let x, y = block.current_pos in
-          (* print_endline (string_of_float x); print_endline (string_of_float
-             y); *)
           let x = int_of_float x in
           let y = int_of_float y in
           let value = block.value in
-          Raylib.draw_rectangle x y square_size square_size
-            (color_of_value value);
-          (* print_endline (string_of_int value); *)
+          if x != 0 && y != 0 then
+            Raylib.draw_rectangle x y square_size square_size
+              (color_of_value value);
           let show = string_of_int value in
           if value <> 0 then
             Raylib.draw_text show
@@ -104,7 +101,6 @@ let display_tiles_input (tiles : block list list) =
 
 (** Calls all of the neccesary functions that displays the game page*)
 let game_page () =
-  print_endline "game_page";
   draw_text "2048" 100 30 80 Color.brown;
   (* add button for instructions *)
   (* add score counter *)

@@ -9,6 +9,7 @@ and block_state =
   | Stationary
   | Moving of float (* movement progress *)
   | Merging
+  | Blank
 
 let empty_block (value : int) : block =
   {
@@ -19,7 +20,6 @@ let empty_block (value : int) : block =
   }
 
 let place_block (value : int) (pos : int * int) : block =
-  (* print_endline "place_block ran"; *)
   {
     value;
     current_pos = Constants.block_position_mapping pos;
@@ -66,7 +66,6 @@ let empty_board =
   ]
 
 let update_block block delta_time =
-  (* print_endline "THIS RAN"; *)
   let interpolate x_cur x_target y_cur y_target progress =
     ( x_cur +. ((x_target -. x_cur) *. progress),
       y_cur +. ((y_target -. y_cur) *. progress) )
@@ -86,6 +85,7 @@ let update_block block delta_time =
         block.state <- Moving new_progress
       end
   | Merging -> ()
+  | Blank -> ()
 (* Additional logic for merging animation *)
 
 (* let draw_block block = *)

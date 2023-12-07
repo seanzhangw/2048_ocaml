@@ -8,7 +8,7 @@ let rec compress = function
   | h :: t when h.value = 0 -> compress t
   | h :: t -> h :: compress t
 
-let correct_pos (row_n : int) (row : block list) : unit =
+let correct_pos_state_lateral (row_n : int) (row : block list) : unit =
   for i = 0 to num_squares - 1 do
     (List.nth row i).target_pos <- block_position_mapping (i, row_n);
     if
@@ -16,6 +16,20 @@ let correct_pos (row_n : int) (row : block list) : unit =
       || snd (List.nth row i).current_pos != snd (List.nth row i).target_pos
     then (List.nth row i).state <- Moving 0.
     else (List.nth row i).state <- Stationary
+  done
+
+let correct_pos_state_vertical (board : block list list) : unit =
+  for i = 0 to num_squares - 1 do
+    for j = 0 to num_squares - 1 do
+      let current_block = List.nth (List.nth board i) j in
+      current_block.target_pos <- block_position_mapping (j, i);
+      if
+        (fst current_block.current_pos != fst current_block.target_pos
+        || snd current_block.current_pos != snd current_block.target_pos)
+        && current_block.state != Blank
+      then current_block.state <- Moving 0.
+      else current_block.state <- Stationary
+    done
   done
 
 let rec l_merge = function
@@ -36,7 +50,6 @@ let r_merge lst =
   (List.rev merged, score)
 
 let l_move (row_n : int) (row : block list) : block list * int =
-  print_endline "left move";
   let compressed = compress row in
   let merged, score = l_merge compressed in
   let result = compress merged in
@@ -48,27 +61,28 @@ let l_move (row_n : int) (row : block list) : block list * int =
           value = 0;
           current_pos = block_position_mapping (n + List.length result, row_n);
           target_pos = (0.0, 0.0);
-          state = Stationary;
+          state = Blank;
         })
   in
-  correct_pos row_n (result @ padding);
+  correct_pos_state_lateral row_n (result @ padding);
   (result @ padding, score)
 
-let r_move (row : block list) : block list * int =
+let r_move (row_n : int) (row : block list) : block list * int =
   let compressed = compress row in
   let merged, score = r_merge compressed in
   let result_length = List.length merged in
   let padding =
     List.init
       (List.length row - result_length)
-      (fun _ ->
+      (fun n ->
         {
           value = 0;
-          current_pos = (0.0, 0.0);
+          current_pos = block_position_mapping (n, row_n);
           target_pos = (0.0, 0.0);
-          state = Stationary;
+          state = Blank;
         })
   in
+  correct_pos_state_lateral row_n (padding @ merged);
   (padding @ merged, score)
 
 let transpose matrix =
@@ -94,25 +108,66 @@ let transpose matrix =
       in
       innerTranspose matrix []
 
+let up_move_aux (row : block list) =
+  let compressed = compress row in
+  let merged, score = l_merge compressed in
+  let result = compress merged in
+  let padding =
+    List.init
+      (List.length row - List.length result)
+      (fun n ->
+        {
+          value = 0;
+          current_pos = (0.0, 0.0);
+          target_pos = (0.0, 0.0);
+          state = Blank;
+        })
+  in
+  (result @ padding, score)
+
 let u_move (board : block list list) : block list list * int =
   let transposed_board = transpose board in
-  let moved_board, scores = List.split (List.mapi l_move transposed_board) in
-  (transpose moved_board, List.fold_left ( + ) 0 scores)
+  let moved_board, scores =
+    List.split (List.map up_move_aux transposed_board)
+  in
+  let final_board = transpose moved_board in
+  correct_pos_state_vertical final_board;
+  (final_board, List.fold_left ( + ) 0 scores)
+
+let down_move_aux (row : block list) =
+  let compressed = compress row in
+  let merged, score = r_merge compressed in
+  let result_length = List.length merged in
+  let padding =
+    List.init
+      (List.length row - result_length)
+      (fun n ->
+        {
+          value = 0;
+          current_pos = (0.0, 0.0);
+          target_pos = (0.0, 0.0);
+          state = Blank;
+        })
+  in
+  (padding @ merged, score)
 
 let d_move (board : block list list) : block list list * int =
   let transposed_board = transpose board in
-  let moved_board, scores = List.split (List.map r_move transposed_board) in
-  (transpose moved_board, List.fold_left ( + ) 0 scores)
+  let moved_board, scores =
+    List.split (List.map down_move_aux transposed_board)
+  in
+  let final_board = transpose moved_board in
+  correct_pos_state_vertical final_board;
+  (final_board, List.fold_left ( + ) 0 scores)
 
 let calculate_next (board : block list list) (dir : int) : block list list * int
     =
   match dir with
   | dir when dir = move_left ->
       let moved_board, scores = List.split (List.mapi l_move board) in
-      (* print_block_list_list moved_board; *)
       (moved_board, List.fold_left ( + ) 0 scores)
   | dir when dir = move_right ->
-      let moved_board, scores = List.split (List.map r_move board) in
+      let moved_board, scores = List.split (List.mapi r_move board) in
       (moved_board, List.fold_left ( + ) 0 scores)
   | dir when dir = move_up ->
       let moved_board, scores = u_move board in
@@ -177,16 +232,12 @@ let generate_block board =
         else row)
       board
   in
-  (* print_endline "HERE DUMBASS"; print_block_list_list new_board; *)
   new_board
 
 let generate_initial () =
   Random.self_init ();
   let random_mag () = if Random.float 1. < 0.9 then 2 else 4 in
   let rec set_block board col row value =
-    print_endline ("row: " ^ string_of_int row);
-    print_endline ("col: " ^ string_of_int col);
-    print_endline ("val: " ^ string_of_int value);
     List.mapi
       (fun i r ->
         if i = row then
