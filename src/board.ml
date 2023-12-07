@@ -81,7 +81,6 @@ let draw_new_game_button () =
 
 (** Displays the durrent board data onto the board *)
 let display_tiles_input (tiles : block list list) =
-  (* print_block_list_list tiles; *)
   let color_of_value value =
     match value with
     | 2 -> Raylib.Color.skyblue
@@ -105,7 +104,7 @@ let display_tiles_input (tiles : block list list) =
           let x = int_of_float x in
           let y = int_of_float y in
           let value = block.value in
-          if x != 0 && y != 0 then
+          if x != 0 && y != 0 && value != 0 then
             Raylib.draw_rectangle x y square_size square_size
               (color_of_value value);
           let show = string_of_int value in

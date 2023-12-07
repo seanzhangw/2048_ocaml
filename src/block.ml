@@ -9,15 +9,8 @@ and block_state =
   | Stationary
   | Moving of float (* movement progress *)
   | Merging
+  | Emerging of float
   | Blank
-
-let empty_block (value : int) : block =
-  {
-    value = 0;
-    current_pos = (0., 0.);
-    target_pos = (0., 0.);
-    state = Stationary;
-  }
 
 let place_block (value : int) (pos : int * int) : block =
   {
@@ -85,6 +78,14 @@ let update_block block delta_time =
         block.state <- Moving new_progress
       end
   | Merging -> ()
+  | Emerging progress ->
+      let new_progress = progress +. (Constants.block_scaling *. delta_time) in
+      if new_progress >= 1.0 then begin
+        block.state <- Stationary
+      end
+      else begin
+        block.state <- Emerging new_progress
+      end
   | Blank -> ()
 (* Additional logic for merging animation *)
 

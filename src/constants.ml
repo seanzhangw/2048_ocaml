@@ -15,7 +15,9 @@ let move_down = 3
 let file_path = "data/high_score.json"
 
 (* Animation *)
+let move_cooldown = 0.15
 let block_speed = 2.0
+let block_scaling = 2.0
 
 let block_position_mapping = function
   | 0, 0 -> (229., 169.)

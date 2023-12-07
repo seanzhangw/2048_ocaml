@@ -10,12 +10,14 @@ let rec compress = function
 
 let correct_pos_state_lateral (row_n : int) (row : block list) : unit =
   for i = 0 to num_squares - 1 do
-    (List.nth row i).target_pos <- block_position_mapping (i, row_n);
+    let current_block = List.nth row i in
+    current_block.target_pos <- block_position_mapping (i, row_n);
     if
-      fst (List.nth row i).current_pos != fst (List.nth row i).target_pos
-      || snd (List.nth row i).current_pos != snd (List.nth row i).target_pos
-    then (List.nth row i).state <- Moving 0.
-    else (List.nth row i).state <- Stationary
+      fst current_block.current_pos != fst current_block.target_pos
+      || snd current_block.current_pos != snd current_block.target_pos
+         && current_block.state != Blank
+    then current_block.state <- Moving 0.
+    else current_block.state <- Stationary
   done
 
 let correct_pos_state_vertical (board : block list list) : unit =
@@ -59,7 +61,8 @@ let l_move (row_n : int) (row : block list) : block list * int =
       (fun n ->
         {
           value = 0;
-          current_pos = block_position_mapping (n + List.length result, row_n);
+          current_pos =
+            Constants.block_position_mapping (n + List.length result, row_n);
           target_pos = (0.0, 0.0);
           state = Blank;
         })
@@ -222,10 +225,10 @@ let generate_block board =
             (fun j cell ->
               if j = target_col then
                 {
-                  cell with
                   current_pos = Constants.block_position_mapping (j, i);
+                  target_pos = Constants.block_position_mapping (j, i);
                   value = mag;
-                  state = Stationary;
+                  state = Emerging 0.;
                 }
               else cell)
             row
