@@ -123,7 +123,6 @@ let rec main_loop last_time state =
   let open Unix in
   let current_time = gettimeofday () in
   let delta_time = current_time -. last_time in
-  (* print_endline (string_of_float delta_time); *)
   if Raylib.window_should_close () then Raylib.close_window ()
   else
     let next_state =
