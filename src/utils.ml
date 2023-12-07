@@ -7,12 +7,14 @@ let create_directory dir_name =
   | e -> raise e
 
 let write_to_file filename content =
+  create_directory "data";
   let channel = open_out filename in
   output_string channel content;
   flush channel;
   close_out channel
 
 let read_highscore filename =
+  create_directory "data";
   try
     let ic = open_in filename in
     try
