@@ -5,11 +5,13 @@ open Start
 open Constants
 open Instructions
 open Block_logic
+open Tetris_logic
 
 type game_state =
   | StartingPage
   | Game
   | InstructionsPage
+  | Tetris
 
 let score = ref 0
 let high_score = ref 0
@@ -18,6 +20,13 @@ let high_score = ref 0
 let setup () =
   init_window 800 600 "raylib [core] example - basic window";
   set_target_fps 60
+
+(** Stores the data we are displaying for the board. Generates an initial block
+    in a random position *)
+let board =
+  ref
+    (generate_initial
+       [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ])
 
 (* Draws and implements the logic for the start page. Continuously checks for
    key input to progress to instructions or game state *)
@@ -30,19 +39,6 @@ let starting_page_logic () =
   in
   end_drawing ();
   next_state
-
-(** Stores the data we are displaying for the board. Generates an initial block
-    in a random position *)
-let board =
-  ref
-    (generate_initial
-       [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ])
-
-(*Check is button clicked to return to the homepage*)
-(* let check_home_page_button_click () = if Raylib.is_mouse_button_pressed
-   MouseButton.Left then let mouse_x = Raylib.get_mouse_x () in let mouse_y =
-   Raylib.get_mouse_y () in if mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y
-   >= 30 && mouse_y <= 30 + 56 then StartingPage else Game else Game *)
 
 (** Logic behind handling the button click for the new game button *)
 let check_new_game_button_click () =
@@ -61,6 +57,22 @@ let check_new_game_button_click () =
         generate_initial
           [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ];
     score := 0)
+
+let tetris_game_logic () =
+  begin_drawing ();
+  clear_background Color.raywhite;
+  tetris_page ();
+  (* check_home_page_button_click (); *)
+  check_new_game_button_click ();
+  (* Here you would draw your Tetris game state and handle input *)
+  end_drawing ();
+  Tetris (* Maintain TetrisGame state or transition to others if needed *)
+
+(*Check is button clicked to return to the homepage*)
+(* let check_home_page_button_click () = if Raylib.is_mouse_button_pressed
+   MouseButton.Left then let mouse_x = Raylib.get_mouse_x () in let mouse_y =
+   Raylib.get_mouse_y () in if mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y
+   >= 30 && mouse_y <= 30 + 56 then StartingPage else Game else Game *)
 
 (* Draws and implements the logic for the game page. Continuously checks for key
    input to reset the game *)
@@ -107,6 +119,7 @@ let instructions_logic () =
   let next_state =
     if is_key_pressed Key.Escape then StartingPage
     else if is_key_pressed Key.O then Game
+    else if is_key_pressed Key.T then Tetris
     else InstructionsPage
   in
   end_drawing ();
@@ -122,6 +135,7 @@ let rec main_loop state =
       | StartingPage -> starting_page_logic ()
       | Game -> game_logic ()
       | InstructionsPage -> instructions_logic ()
+      | Tetris -> tetris_game_logic ()
     in
     main_loop next_state
 
