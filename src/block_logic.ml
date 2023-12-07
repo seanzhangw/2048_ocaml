@@ -10,7 +10,12 @@ let rec compress = function
 
 let correct_pos (row_n : int) (row : block list) : unit =
   for i = 0 to num_squares - 1 do
-    (List.nth row i).current_pos <- block_position_mapping (i, row_n)
+    (List.nth row i).target_pos <- block_position_mapping (i, row_n);
+    if
+      fst (List.nth row i).current_pos != fst (List.nth row i).target_pos
+      || snd (List.nth row i).current_pos != snd (List.nth row i).target_pos
+    then (List.nth row i).state <- Moving 0.
+    else (List.nth row i).state <- Stationary
   done
 
 let rec l_merge = function
@@ -104,7 +109,7 @@ let calculate_next (board : block list list) (dir : int) : block list list * int
   match dir with
   | dir when dir = move_left ->
       let moved_board, scores = List.split (List.mapi l_move board) in
-      print_block_list_list moved_board;
+      (* print_block_list_list moved_board; *)
       (moved_board, List.fold_left ( + ) 0 scores)
   | dir when dir = move_right ->
       let moved_board, scores = List.split (List.map r_move board) in
@@ -154,35 +159,39 @@ let generate_block board =
     else failwith "Error: Index out of bounds"
   in
   let target_row, target_col = find_nth_empty loc zero_lst in
-  List.mapi
-    (fun i row ->
-      if i = target_row then
-        List.mapi
-          (fun j cell ->
-            if j = target_col then
-              {
-                cell with
-                current_pos = Constants.block_position_mapping (i, j);
-                value = mag;
-                state = Stationary;
-              }
-            else cell)
-          row
-      else row)
-    board
+  let new_board =
+    List.mapi
+      (fun i row ->
+        if i = target_row then
+          List.mapi
+            (fun j cell ->
+              if j = target_col then
+                {
+                  cell with
+                  current_pos = Constants.block_position_mapping (j, i);
+                  value = mag;
+                  state = Stationary;
+                }
+              else cell)
+            row
+        else row)
+      board
+  in
+  (* print_endline "HERE DUMBASS"; print_block_list_list new_board; *)
+  new_board
 
 let generate_initial () =
   Random.self_init ();
-
   let random_mag () = if Random.float 1. < 0.9 then 2 else 4 in
-
-  let rec set_block board row col value =
-    (* print_endline ("value: " ^ string_of_int value); *)
+  let rec set_block board col row value =
+    print_endline ("row: " ^ string_of_int row);
+    print_endline ("col: " ^ string_of_int col);
+    print_endline ("val: " ^ string_of_int value);
     List.mapi
       (fun i r ->
         if i = row then
           List.mapi
-            (fun j c -> if j = col then Block.place_block value (i, j) else c)
+            (fun j c -> if j = col then Block.place_block value (j, i) else c)
             r
         else r)
       board
@@ -191,7 +200,7 @@ let generate_initial () =
     let row = Random.int 4 in
     let col = Random.int 4 in
     match List.nth (List.nth board row) col with
-    | { value = 0; _ } -> (row, col)
+    | { value = 0; _ } -> (col, row)
     | _ -> get_random_empty_position board
   in
 

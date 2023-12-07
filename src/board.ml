@@ -4,6 +4,7 @@ open Block
 
 (** Draws the board without the numbers *)
 let draw_init_grid () =
+  print_endline "HERE DUBMASS";
   let extended_square_size = square_size + spacing in
 
   (* includes the size of the square plus spacing *)
@@ -63,6 +64,7 @@ let draw_new_game_button () =
 
 (** Displays the durrent board data onto the board *)
 let display_tiles_input (tiles : block list list) =
+  (* print_block_list_list tiles; *)
   let color_of_value value =
     match value with
     | 2 -> Raylib.Color.skyblue
@@ -102,6 +104,7 @@ let display_tiles_input (tiles : block list list) =
 
 (** Calls all of the neccesary functions that displays the game page*)
 let game_page () =
+  print_endline "game_page";
   draw_text "2048" 100 30 80 Color.brown;
   (* add button for instructions *)
   (* add score counter *)

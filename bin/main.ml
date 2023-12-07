@@ -8,4 +8,4 @@ open Game
 let () =
   setup ();
   (* Call the setup function from Game module *)
-  main_loop StartingPage (* Call the loop function from Game module *)
+  main_loop 0. StartingPage (* Call the loop function from Game module *)

@@ -50,16 +50,27 @@ let check_new_game_button_click () =
       && mouse_x <= 600 + 150
       && mouse_y >= 100
       && mouse_y <= 100 + 50
-    then
-      (* Reset the board to all zeroes *)
-      (* board := generate_initial (); *)
-      board := empty_board;
+    then (* Reset the board *)
+      board := generate_initial ();
     score := 0;
     Utils.write_to_file Constants.file_path (string_of_int !high_score))
 
+let animate delta_time =
+  List.iter
+    (fun row ->
+      List.iter
+        (fun block ->
+          match block.state with
+          | Stationary -> ()
+          | _ -> update_block block delta_time)
+        row)
+    !board;
+
+  display_tiles_input !board
+
 (* Draws and implements the logic for the game page. Continuously checks for key
    input to reset the game *)
-let game_logic () =
+let game_logic delta_time =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
@@ -82,6 +93,7 @@ let game_logic () =
   else if is_key_pressed Key.Right then handle_move move_right
   else if is_key_pressed Key.Up then handle_move move_up
   else if is_key_pressed Key.Down then handle_move move_down;
+  animate delta_time;
   display_tiles_input !board;
   draw_text "Score: " 530 30 30 Color.brown;
   draw_text (string_of_int !score) 730 30 30 Color.beige;
@@ -107,16 +119,26 @@ let instructions_logic () =
 
 (* Main control loop of the game. Depending on the state of the game, a
    different logic block is executed *)
-let rec main_loop state =
+let rec main_loop last_time state =
+  let open Unix in
+  let current_time = gettimeofday () in
+  let delta_time = current_time -. last_time in
+  (* print_endline (string_of_float delta_time); *)
   if Raylib.window_should_close () then Raylib.close_window ()
   else
     let next_state =
       match state with
       | StartingPage -> starting_page_logic ()
-      | Game -> game_logic ()
+      | Game -> game_logic delta_time
       | InstructionsPage -> instructions_logic ()
     in
-    main_loop next_state
+    let frame_end_time = gettimeofday () in
+    let frame_duration = frame_end_time -. current_time in
+    let frame_target = 1.0 /. 60.0 in
+    let sleep_duration = max 0.0 (frame_target -. frame_duration) in
+    ignore (select [] [] [] sleep_duration);
+
+    main_loop current_time next_state
 
 let () = setup ()
 (* start the main loop with the StartingPage state *)

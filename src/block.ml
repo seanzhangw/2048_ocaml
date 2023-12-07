@@ -19,6 +19,7 @@ let empty_block (value : int) : block =
   }
 
 let place_block (value : int) (pos : int * int) : block =
+  (* print_endline "place_block ran"; *)
   {
     value;
     current_pos = Constants.block_position_mapping pos;
@@ -39,17 +40,33 @@ let print_block_list_list board =
 let empty_board =
   [
     [
-      place_block 2 (0, 0);
-      place_block 2 (1, 0);
-      place_block 2 (2, 0);
-      place_block 2 (3, 0);
+      place_block 0 (0, 0);
+      place_block 0 (1, 0);
+      place_block 0 (2, 0);
+      place_block 0 (3, 0);
     ];
-    [ place_block 2 (0, 1); empty_block 0; empty_block 0; empty_block 0 ];
-    [ empty_block 0; empty_block 0; empty_block 0; empty_block 0 ];
-    [ empty_block 0; empty_block 0; empty_block 0; empty_block 0 ];
+    [
+      place_block 0 (0, 1);
+      place_block 0 (1, 1);
+      place_block 0 (2, 1);
+      place_block 0 (3, 1);
+    ];
+    [
+      place_block 0 (0, 2);
+      place_block 0 (1, 2);
+      place_block 0 (2, 2);
+      place_block 0 (3, 2);
+    ];
+    [
+      place_block 0 (0, 3);
+      place_block 0 (1, 3);
+      place_block 0 (2, 3);
+      place_block 0 (3, 3);
+    ];
   ]
 
 let update_block block delta_time =
+  (* print_endline "THIS RAN"; *)
   let interpolate x_cur x_target y_cur y_target progress =
     ( x_cur +. ((x_target -. x_cur) *. progress),
       y_cur +. ((y_target -. y_cur) *. progress) )
@@ -65,7 +82,7 @@ let update_block block delta_time =
       else begin
         block.current_pos <-
           interpolate (fst block.current_pos) (fst block.target_pos)
-            (fst block.current_pos) (fst block.target_pos) new_progress;
+            (snd block.current_pos) (snd block.target_pos) new_progress;
         block.state <- Moving new_progress
       end
   | Merging -> ()
