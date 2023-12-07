@@ -1,5 +1,5 @@
 (library
- (name block)
- (public_name block)
+ (name G2048)
+ (public_name G2048)
  (libraries raylib yojson unix)
  (modules :standard))

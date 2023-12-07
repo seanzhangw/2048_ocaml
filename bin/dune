@@ -2,4 +2,4 @@
  (name main)
  (public_name Main)
  (modules main)
- (libraries block raylib))
+ (libraries G2048 raylib))
