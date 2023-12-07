@@ -35,3 +35,7 @@ let block_position_mapping = function
   | 2, 3 -> (403., 410.)
   | 3, 3 -> (490., 410.)
   | _ -> failwith "Invalid coordinate"
+
+(* Audio *)
+let block_move_sound = Raylib.load_music_stream "resources/block.mp3"
+let button_click_sound = Raylib.load_music_stream "resources/button.mp3"

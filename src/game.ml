@@ -5,7 +5,6 @@ open Block
 open Constants
 open Instructions
 open Block_logic
-open Utils
 
 type game_state =
   | StartingPage
@@ -13,7 +12,7 @@ type game_state =
   | InstructionsPage
 
 let score = ref 0
-let high_score = ref (Utils.read_highscore Constants.file_path)
+let high_score = ref 0
 
 (*Stores the data we are displaying for the board.*)
 let board = ref (generate_initial ())
@@ -30,15 +29,21 @@ let starting_page_logic () =
   clear_background Color.raywhite;
   starting_page ();
   let next_state =
-    if is_key_pressed Key.Space then Game
-    else if is_key_pressed Key.I then InstructionsPage
-    else StartingPage
+    if is_key_pressed Key.I then InstructionsPage else StartingPage
   in
   end_drawing ();
   next_state
 
-(* * Stores the current score let score = "0" *)
-
+let check_home_page_button_click () = 
+  if Raylib.is_mouse_button_pressed MouseButton.Left then 
+    let mouse_x = Raylib.get_mouse_x () in 
+    let mouse_y = Raylib.get_mouse_y () in 
+    if mouse_x >= 37 
+      && mouse_x <= 37 + 184 
+      && mouse_y >= 30 
+      && mouse_y <= 30 + 56 
+    then StartingPage else Game 
+  else Game
 (** Logic behind handling the button click for the new game button *)
 let check_new_game_button_click () =
   (* If the mouse is over the button and the left mouse button is pressed *)
@@ -46,10 +51,10 @@ let check_new_game_button_click () =
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
     if
-      mouse_x >= 600
-      && mouse_x <= 600 + 150
-      && mouse_y >= 100
-      && mouse_y <= 100 + 50
+      mouse_x >= 615
+      && mouse_x <= 615 + 150
+      && mouse_y >= 37
+      && mouse_y <= 37 + 58
     then (* Reset the board *)
       board := generate_initial ();
     score := 0;
@@ -74,6 +79,8 @@ let game_logic delta_time =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
+  let next_state = check_home_page_button_click () in
+  (* Update the state based on button click *)
   check_new_game_button_click ();
 
   let handle_move dir =
@@ -95,13 +102,13 @@ let game_logic delta_time =
   else if is_key_pressed Key.Down then handle_move move_down;
   animate delta_time;
   display_tiles_input !board;
-  draw_text "Score: " 530 30 30 Color.brown;
-  draw_text (string_of_int !score) 730 30 30 Color.beige;
-  draw_text "High Score: " 530 70 30 Color.brown;
-  draw_text (string_of_int !high_score) 730 70 30 Color.beige;
+  draw_text "Score " 300 37 15 Color.brown;
+  draw_text (string_of_int !score) 300 57 47 Color.beige;
+  draw_text "High Score " 450 37 15 Color.brown;
+  draw_text (string_of_int !high_score) 450 57 47 Color.beige;
 
   end_drawing ();
-  Game (* You can transition to another state here if needed *)
+  next_state (* Return the updated state *)
 
 (* Draws and implements the logic for the instruction page. Continuously checks
    for key input to return to start page or begin the game *)
@@ -111,7 +118,7 @@ let instructions_logic () =
   instructions ();
   let next_state =
     if is_key_pressed Key.Escape then StartingPage
-    else if is_key_pressed Key.S then Game
+    else if is_key_pressed Key.O then Game
     else InstructionsPage
   in
   end_drawing ();

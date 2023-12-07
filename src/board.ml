@@ -11,7 +11,7 @@ let draw_init_grid () =
 
   (* Calculate positions for centering the grid on the screen *)
   let grid_x = (screen_width - grid_size + spacing) / 2 in
-  let grid_y = ((screen_height - grid_size + spacing) / 2) + 20 in
+  let grid_y = ((screen_height - grid_size + spacing) / 2) + 40 in
 
   (* Set location for dark gray squares including the margin area *)
   for i = 0 to num_squares - 1 do
@@ -41,25 +41,43 @@ let draw_init_grid () =
   done;
   ()
 
-(** Draws the new game button *)
+(* Draw new home page button*)
+let draw_home_page_button () =
+  (* Check if the mouse is over the button *)
+  let mouse_x = Raylib.get_mouse_x () in
+  let mouse_y = Raylib.get_mouse_y () in
+  let is_mouse_over_button =
+    mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y >= 30 && mouse_y <= 30 + 56
+  in
+
+  (* Change the button's color based on mouse hover *)
+  let button_text =
+    if is_mouse_over_button then Color.darkbrown else Color.brown
+  in
+  Raylib.draw_rectangle 37 38 184 56 Color.raywhite;
+  Raylib.draw_text "2048" 37 30 80 button_text
+
+(** Draws new game button *)
 let draw_new_game_button () =
   (* Check if the mouse is over the button *)
   let mouse_x = Raylib.get_mouse_x () in
   let mouse_y = Raylib.get_mouse_y () in
   let is_mouse_over_button =
-    mouse_x >= 600
-    && mouse_x <= 600 + 150
-    && mouse_y >= 100
-    && mouse_y <= 100 + 50
+    mouse_x >= 615
+    && mouse_x <= 615 + 150
+    && mouse_y >= 37
+    && mouse_y <= 37 + 58
   in
 
   (* Change the button's color based on mouse hover *)
   let button_color =
-    if is_mouse_over_button then Color.lightgray else Color.gray
+    if is_mouse_over_button then Color.brown else Color.beige
   in
-
-  Raylib.draw_rectangle 600 100 150 50 button_color;
-  Raylib.draw_text "New Game" (600 + 20) (100 + 15) 20 Color.black
+  let button_text =
+    if is_mouse_over_button then Color.lightgray else Color.white
+  in
+  Raylib.draw_rectangle 615 37 150 58 button_color;
+  Raylib.draw_text "New Game" (615 + 26) (37 + 20) 20 button_text
 
 (** Displays the durrent board data onto the board *)
 let display_tiles_input (tiles : block list list) =
@@ -101,9 +119,9 @@ let display_tiles_input (tiles : block list list) =
 
 (** Calls all of the neccesary functions that displays the game page*)
 let game_page () =
-  draw_text "2048" 100 30 80 Color.brown;
+  draw_text "2048" 37 30 80 Color.brown;
+  draw_home_page_button ();
   (* add button for instructions *)
-  (* add score counter *)
   (* add button for new game *)
   draw_new_game_button ();
   draw_init_grid ()
