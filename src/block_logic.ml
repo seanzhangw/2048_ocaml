@@ -46,8 +46,7 @@ let rec l_merge = function
         Block.set_state a Merging;
         a
       in
-      ( merged_block :: merged_list,
-        Block.get_value a + Block.get_value b + score )
+      (merged_block :: merged_list, Block.get_value merged_block + score)
   | a :: t ->
       let merged_list, score = l_merge t in
       (a :: merged_list, score)
