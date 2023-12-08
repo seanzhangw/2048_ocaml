@@ -222,15 +222,9 @@ let continue_playing_state () =
 
   let handle_move dir =
     let new_board, score_delta = calculate_next !board dir in
-
-    if
-      (* checks if game board is invalid *)
-      count_empty new_board = 0 && check_foldable new_board = false
-    then Lost
-    else
-      let final_board = generate_block new_board in
-      board := final_board;
-      ContinuePlaying
+    let final_board = generate_block new_board in
+    board := final_board;
+    ContinuePlaying
   in
 
   let next_state =
