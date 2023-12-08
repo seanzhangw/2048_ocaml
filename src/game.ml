@@ -22,6 +22,10 @@ let score = ref 0
 let high_score = ref 0
 let last_move_time = ref 0.
 let board = ref (generate_initial ())
+
+let copy_board (board : block list list ref) : block list list ref =
+  ref (List.map (fun row -> List.map Block.copy_block row) !board)
+
 let current_message = ref ""
 let current_message_pos = ref (60, 100)
 
@@ -213,8 +217,10 @@ and handle_move current_time dir : game_state =
     let new_board, score_delta = calculate_next !board dir in
 
     if
-      (* checks if game board is invalid *)
-      count_empty new_board = 0 && check_foldable new_board = false
+      fst (calculate_next !(copy_board board) 0) = !board
+      && fst (calculate_next !(copy_board board) 1) = !board
+      && fst (calculate_next !(copy_board board) 2) = !board
+      && fst (calculate_next !(copy_board board) 3) = !board
     then Lost
     else if (* checks if the board has 2048 *)
             find_2048 new_board then (
