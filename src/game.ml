@@ -22,6 +22,7 @@ let score = ref 0
 let high_score = ref 0
 let last_move_time = ref 0.
 let board = ref (generate_initial ())
+let current_message = ref ""
 
 (** Initializes the Raylib window with the specified size and frame rate. *)
 let setup () =
@@ -84,6 +85,41 @@ let animate delta_time =
 
   display_tiles_input !board
 
+let encouraging_messages =
+  [
+    "Great move!";
+    "Keep it up!";
+    "Nice one!";
+    "You're doing well!";
+    "Awesome!";
+    "Fantastic!";
+    "Superb effort!";
+    "You're on fire!";
+    "Incredible skill!";
+    "Way to go!";
+    "You're a natural!";
+    "Brilliant move!";
+    "You're smashing it!";
+    "Exceptional strategy!";
+    "You're a genius!";
+    "Unstoppable!";
+    "Amazing progress!";
+    "Keep the streak going!";
+    "Masterful play!";
+    "You're a superstar!";
+    "Phenomenal!";
+    "Setting records!";
+    "You make it look easy!";
+    "You're a champion!";
+    "You're leading the way!";
+    "Spectacular!";
+  ]
+
+let encouragement_text () =
+  Raylib.draw_text !current_message Constants.encouragement_text_pos_x
+    encouragement_text_pos_y encouragement_text_size Color.brown
+
+let reset_current_message () = current_message := ""
 (*Check is button clicked to return to the homepage*)
 (* let check_home_page_button_click () = if Raylib.is_mouse_button_pressed
    MouseButton.Left then let mouse_x = Raylib.get_mouse_x () in let mouse_y =
@@ -141,11 +177,12 @@ let rec game_logic current_time delta_time =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
-  let next_state = check_home_page_button_click Game in
+
   check_new_game_button_click ();
 
   if !score > !high_score then high_score := !score
   else high_score := !high_score;
+  encouragement_text ();
   let next_state =
     if is_key_pressed Key.Left then handle_move current_time move_left
     else if is_key_pressed Key.Right then handle_move current_time move_right
@@ -183,6 +220,17 @@ and handle_move current_time dir : game_state =
       score := !score + score_delta;
       board := final_board;
       Won)
+    else if
+      (* checks if game board is invalid *)
+      count_empty new_board = 0 && check_foldable new_board = false
+    then Lost
+    else if (* checks if the board has 2048 *)
+            find_2048 new_board then (
+      (* && won_alr = false then *)
+      let final_board = generate_block new_board in
+      score := !score + score_delta;
+      board := final_board;
+      Won)
     else if new_board = !board then (
       score := !score + score_delta;
       board := new_board;
@@ -191,6 +239,9 @@ and handle_move current_time dir : game_state =
       let final_board = generate_block new_board in
       score := !score + score_delta;
       board := final_board;
+      current_message :=
+        List.nth encouraging_messages
+          (Random.int (List.length encouraging_messages));
       Game)
   else Game
 

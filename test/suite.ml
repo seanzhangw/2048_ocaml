@@ -66,6 +66,15 @@ let pp_block_matrix matrix =
 let pp_block_matrix_int_pair (matrix, score) =
   Printf.sprintf "(%s, %s)" (pp_block_matrix matrix) (string_of_int score)
 
+(* Function to convert a single tuple (int * int) to a string *)
+let string_of_tuple (a, b) =
+  "(" ^ string_of_int a ^ ", " ^ string_of_int b ^ ")"
+
+(* Function to pretty print the list of (int * int) tuples *)
+let pp_list lst =
+  let string_list = List.map string_of_tuple lst in
+  "[" ^ String.concat "; " string_list ^ "]"
+
 (* test functions *)
 
 (* Test function for the compress funtion *)
@@ -147,6 +156,24 @@ let calculate_next_test expected board dir _ =
      ^ "\nexpected: " ^ expected_str ^ "\nactual: " ^ actual_str)
     expected_str actual_str
 
+(* Test function for the find_zeros funtion *)
+let find_zeros_test expected board _ =
+  let expected_str = pp_list expected in
+  let actual_str = pp_list (find_zeros board) in
+  assert_equal
+    ~printer:(fun x -> x)
+    ~msg:
+      ("function: find_zeros\ninput: " ^ pp_block_matrix board ^ "\nexpected: "
+     ^ expected_str ^ "\nactual: " ^ actual_str)
+    expected_str actual_str
+
+(* Test function for the count_empty function *)
+let count_empty_test expected board _ =
+  let actual = count_empty board in
+  assert_equal ~printer:string_of_int
+    ~msg:("Board: " ^ pp_block_matrix board)
+    expected actual
+
 let single_one_list = [ 1 ]
 let ones_list = [ 1; 1; 1; 1 ]
 let one_to_four_list = [ 1; 2; 3; 4 ]
@@ -161,6 +188,8 @@ let zeros_at_start = [ 0; 0; 1; 2 ]
 let zeros_at_end = [ 1; 2; 0; 0 ]
 let zero_on_left = [ 0; 1; 2; 3 ]
 let zero_on_right = [ 1; 2; 3; 0 ]
+let alternate_zeros_input = [ 0; 2; 0; 4; 0 ]
+let alternate_zeros_output = [ 2; 4 ]
 
 (* Test cases testing compress *)
 let compress_tests =
@@ -204,6 +233,10 @@ let compress_tests =
     >:: compress_test
           (to_block_list one_to_three_list)
           (to_block_list zero_on_right);
+    "Testing alternating zeros"
+    >:: compress_test
+          (to_block_list alternate_zeros_output)
+          (to_block_list alternate_zeros_input);
   ]
 
 let list_of_zeros = [ 0; 0; 0; 0 ]
@@ -224,6 +257,10 @@ let multiple_merge_right_input = [ 4; 4; 2; 2 ]
 let multiple_merge_right_output = [ 8; 4 ]
 let merge_trailing_zero_right_input = [ 8; 2; 2; 0 ]
 let merge_trailing_zero_right_output = [ 8; 4; 0 ]
+let l_merge_leading_zeros_input = [ 0; 0; 2; 2 ]
+let l_merge_leading_zeros_output = [ 0; 4 ]
+let r_merge_leading_zeros_input = [ 2; 2; 0; 0 ]
+let r_merge_leading_zeros_output = [ 4; 0 ]
 
 (* Test cases testing the merge functions *)
 let merge_tests =
@@ -268,6 +305,14 @@ let merge_tests =
     >:: r_merge_test
           (to_block_list merge_trailing_zero_right_output, 4)
           (to_block_list merge_trailing_zero_right_input);
+    "Merge with leading zeros in left merge"
+    >:: l_merge_test
+          (to_block_list l_merge_leading_zeros_output, 4)
+          (to_block_list l_merge_leading_zeros_input);
+    "Merge with leading zeros in right merge"
+    >:: l_merge_test
+          (to_block_list r_merge_leading_zeros_output, 4)
+          (to_block_list r_merge_leading_zeros_input);
   ]
 
 let left_move_input = [ 2; 2; 0; 2 ]
@@ -278,6 +323,7 @@ let left_move_no_merge_input = [ 2; 0; 4; 2 ]
 let left_move_no_merge_output = [ 2; 4; 2; 0 ]
 let left_move_complex_merge_input = [ 2; 2; 2; 2 ]
 let left_move_complex_merge_output = [ 4; 4; 0; 0 ]
+let left_move_single_nonzero_input = [ 2; 0; 0; 0 ]
 let right_move_input = [ 2; 2; 0; 2 ]
 let right_move_output = [ 0; 0; 2; 4 ]
 let right_move_with_merge_input = [ 2; 2; 0; 0 ]
@@ -286,6 +332,8 @@ let right_move_no_merge_input = [ 2; 0; 4; 2 ]
 let right_move_no_merge_output = [ 0; 2; 4; 2 ]
 let right_move_complex_merge_input = [ 2; 2; 2; 2 ]
 let right_move_complex_merge_output = [ 0; 0; 4; 4 ]
+let right_move_single_nonzero_input = [ 0; 0; 0; 2 ]
+let only_zero = [ 0; 0; 0; 0 ]
 
 (* Test cases testing the move functions *)
 let move_tests =
@@ -295,7 +343,7 @@ let move_tests =
           (to_block_list left_move_output, 4)
           0
           (to_block_list left_move_input);
-    "Left move with merge\n   and trailing zeros"
+    "Left move with merge and trailing zeros"
     >:: l_move_test
           (to_block_list left_move_with_merge_output, 4)
           0
@@ -310,6 +358,13 @@ let move_tests =
           (to_block_list left_move_complex_merge_output, 8)
           0
           (to_block_list left_move_complex_merge_input);
+    "Left move with single non-zero"
+    >:: l_move_test
+          (to_block_list left_move_single_nonzero_input, 0)
+          0
+          (to_block_list left_move_single_nonzero_input);
+    "Left move with only zero"
+    >:: l_move_test (to_block_list only_zero, 0) 0 (to_block_list only_zero);
     "Testing\n right move"
     >:: r_move_test
           (to_block_list right_move_output, 4)
@@ -330,6 +385,13 @@ let move_tests =
           (to_block_list right_move_complex_merge_output, 8)
           0
           (to_block_list right_move_complex_merge_input);
+    "Right move with single non-zero"
+    >:: r_move_test
+          (to_block_list right_move_single_nonzero_input, 0)
+          0
+          (to_block_list right_move_single_nonzero_input);
+    "Right move with only zero"
+    >:: r_move_test (to_block_list only_zero, 0) 0 (to_block_list only_zero);
   ]
 
 let identity_matrix =
@@ -361,6 +423,10 @@ let negative_values_matrix = [ [ -1; -2; -3 ]; [ -4; -5; -6 ]; [ -7; -8; -9 ] ]
 
 let negative_values_matrix_t =
   [ [ -1; -4; -7 ]; [ -2; -5; -8 ]; [ -3; -6; -9 ] ]
+
+let single_element_matrix = [ [ 1 ] ]
+let random_values_nonsquare = [ [ 9; 2; 5 ]; [ 1; 7; 4 ]; [ 3; 6; 8 ] ]
+let random_values_nonsquare_t = [ [ 9; 1; 3 ]; [ 2; 7; 6 ]; [ 5; 4; 8 ] ]
 
 (* Test cases testing the transpose function *)
 let transpose_tests =
@@ -397,6 +463,14 @@ let transpose_tests =
     >:: transpose_test
           (to_block_matrix negative_values_matrix)
           (to_block_matrix negative_values_matrix_t);
+    "Transpose of a single-element matrix"
+    >:: transpose_test
+          (to_block_matrix single_element_matrix)
+          (to_block_matrix single_element_matrix);
+    "Transpose of a random value non-square matrix"
+    >:: transpose_test
+          (to_block_matrix random_values_nonsquare)
+          (to_block_matrix random_values_nonsquare_t);
   ]
 
 let identity_matrix_r =
@@ -504,10 +578,102 @@ let calculate_next_tests =
           move_left;
   ]
 
+let find_zeros_zero_matrix_output =
+  [
+    (0, 3);
+    (0, 2);
+    (0, 1);
+    (0, 0);
+    (1, 3);
+    (1, 2);
+    (1, 1);
+    (1, 0);
+    (2, 3);
+    (2, 2);
+    (2, 1);
+    (2, 0);
+    (3, 3);
+    (3, 2);
+    (3, 1);
+    (3, 0);
+  ]
+
+let find_zeros_no_zero_matrix_output = []
+let empty_matrix = [ [] ]
+let zero_corner_matrix = [ [ 0; 1; 0 ]; [ 1; 1; 1 ]; [ 0; 1; 0 ] ]
+let zero_corner_matrix_output = [ (0, 2); (0, 0); (2, 2); (2, 0) ]
+let zero_middle_matrix = [ [ 1; 1; 1 ]; [ 1; 0; 1 ]; [ 1; 1; 1 ] ]
+let zero_middle_matrix_output = [ (1, 1) ]
+
+let random_zero_matrix =
+  [ [ 0; 1; 1; 0 ]; [ 1; 0; 1; 1 ]; [ 1; 1; 0; 1 ]; [ 0; 1; 1; 0 ] ]
+
+let random_zero_matrix_output =
+  [ (0, 3); (0, 0); (1, 1); (2, 2); (3, 3); (3, 0) ]
+
+let find_zeros_single_row = [ [ 1; 0; 1 ] ]
+let find_zeros_single_row_output = [ (0, 1) ]
+let find_zeros_single_column = [ [ 1 ]; [ 0 ]; [ 1 ] ]
+let find_zeros_single_column_output = [ (1, 0) ]
+let find_zeros_standard = [ [ 1; 0; 3 ]; [ 4; 5; 0 ]; [ 7; 8; 9 ] ]
+let find_zeros_standard_output = [ (0, 1); (1, 2) ]
+
+(* test cases testing the find_zeros function *)
+
+let find_zeros_tests =
+  [
+    "Testing find_zeros on zero matrix"
+    >:: find_zeros_test find_zeros_zero_matrix_output
+          (to_block_matrix zero_matrix);
+    "Testing find_zeros on matrix with no zeros"
+    >:: find_zeros_test find_zeros_no_zero_matrix_output
+          (to_block_matrix no_movement_matrix);
+    "Testing find_zeros on empty matrix"
+    >:: find_zeros_test find_zeros_no_zero_matrix_output
+          (to_block_matrix empty_matrix);
+    "Testing find_zeros on zero corner matrix"
+    >:: find_zeros_test zero_corner_matrix_output
+          (to_block_matrix zero_corner_matrix);
+    "Testing find_zeros on zero middle matrix"
+    >:: find_zeros_test zero_middle_matrix_output
+          (to_block_matrix zero_middle_matrix);
+    "Testing find_zeros on single row matrix"
+    >:: find_zeros_test find_zeros_single_row_output
+          (to_block_matrix find_zeros_single_row);
+    "Testing find_zeros on single column matrix"
+    >:: find_zeros_test find_zeros_single_column_output
+          (to_block_matrix find_zeros_single_column);
+    "Testing find_zeros on standard matrix"
+    >:: find_zeros_test find_zeros_standard_output
+          (to_block_matrix find_zeros_standard);
+  ]
+
+(* test cases testing the count_empty function *)
+
+let count_empty_tests =
+  [
+    "Testing count_empty on zero matrix"
+    >:: count_empty_test 16 (to_block_matrix zero_matrix);
+    "Testing count_empty on matrix with no zeros"
+    >:: count_empty_test 0 (to_block_matrix no_movement_matrix);
+    "Testing count_empty on empty matrix"
+    >:: count_empty_test 0 (to_block_matrix empty_matrix);
+    "Testing count_empty on zero corner matrix"
+    >:: count_empty_test 4 (to_block_matrix zero_corner_matrix);
+    "Testing count_empty on zero middle matrix"
+    >:: count_empty_test 1 (to_block_matrix zero_middle_matrix);
+    "Testing count_empty on single row matrix"
+    >:: count_empty_test 1 (to_block_matrix find_zeros_single_row);
+    "Testing count_empty on single column matrix"
+    >:: count_empty_test 1 (to_block_matrix find_zeros_single_column);
+    "Testing count_empty on standard matrix"
+    >:: count_empty_test 2 (to_block_matrix find_zeros_standard);
+  ]
+
 let tests =
   "test suite"
   >::: compress_tests @ merge_tests @ move_tests @ transpose_tests
-       @ calculate_next_tests
+       @ calculate_next_tests @ find_zeros_tests @ count_empty_tests
 
 (* let tests = compress_tests *)
 let _ = run_test_tt_main tests
