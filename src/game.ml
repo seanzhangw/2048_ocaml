@@ -46,7 +46,7 @@ let starting_page_logic () =
   next_state
 
 (** Checks for the home page button click and resets the board if clicked. *)
-let check_home_page_button_click state =
+let check_home_page_button_click () =
   if Raylib.is_mouse_button_pressed MouseButton.Left then
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
@@ -59,9 +59,9 @@ let check_home_page_button_click state =
       board := generate_initial ();
       score := 0;
       Utils.write_to_file Constants.file_path (string_of_int !high_score);
-      StartingPage)
-    else state
-  else state
+      true)
+    else false
+  else false
 
 (** Handles the button click logic for the new game button. *)
 let check_new_game_button_click () =
@@ -180,7 +180,6 @@ let rec game_logic current_time delta_time =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
-
   check_new_game_button_click ();
 
   if !score > !high_score then high_score := !score
@@ -191,6 +190,7 @@ let rec game_logic current_time delta_time =
     else if is_key_pressed Key.Right then handle_move current_time move_right
     else if is_key_pressed Key.Up then handle_move current_time move_up
     else if is_key_pressed Key.Down then handle_move current_time move_down
+    else if check_home_page_button_click () then StartingPage
     else Game
   in
   animate delta_time;
