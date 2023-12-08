@@ -54,7 +54,7 @@ let file_path = "data/high_score.json"
 (* Animation *)
 let move_cooldown = 0.15
 let block_speed = 2.0
-let initial_block_factor = 0.4
+let initial_block_factor = 0.3
 let block_scaling = 5.0
 
 let block_position_mapping = function
