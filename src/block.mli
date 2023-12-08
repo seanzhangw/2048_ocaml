@@ -68,9 +68,6 @@ module Block : sig
   val place_block : int -> int * int -> block
   (** [place_block] returns a block with a passed in value and current position. *)
 
-  val copy_block : block -> block
-  (** [copy_block] returns a deep copy of the passed in block*)
-
   val place_blank_block : int -> int * int -> block
   (** [place_blank_block] returns a block with a passed in value and current
       position with the [Blank] state. *)
