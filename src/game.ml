@@ -25,6 +25,11 @@ let board = ref (generate_initial ())
 let current_message = ref ""
 let current_message_pos = ref (60, 100)
 
+let reset () =
+  score := 0;
+  board := generate_initial ();
+  Utils.write_to_file Constants.file_path (string_of_int !high_score)
+
 (** Initializes the Raylib window with the specified size and frame rate. *)
 let setup () =
   init_window screen_width screen_height "raylib [core] example - basic window";
@@ -56,9 +61,7 @@ let check_home_page_button_click () =
       && mouse_y >= home_pos_y
       && mouse_y <= home_pos_y + home_height
     then (
-      board := generate_initial ();
-      score := 0;
-      Utils.write_to_file Constants.file_path (string_of_int !high_score);
+      reset ();
       true)
     else false
   else false
@@ -194,8 +197,9 @@ let lost_state () =
   clear_background Color.raywhite;
   lose_state ();
   let next_state =
-    if is_key_pressed Key.Escape then StartingPage
-    else if is_key_pressed Key.S then Game
+    if is_key_pressed Key.S then (
+      reset ();
+      StartingPage)
     else Lost
   in
   end_drawing ();
@@ -206,8 +210,7 @@ let won_state () =
   clear_background Color.raywhite;
   win_state ();
   let next_state =
-    if is_key_pressed Key.Escape then StartingPage
-    else if is_key_pressed Key.S then Game
+    if is_key_pressed Key.S then StartingPage
     else if is_key_pressed Key.D then ContinuePlaying
     else Won
   in

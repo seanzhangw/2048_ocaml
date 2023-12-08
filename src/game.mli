@@ -24,6 +24,9 @@ val board : Block_logic.block list list ref
 val setup : unit -> unit
 (** Initializes the Raylib window with the specified size and frame rate. *)
 
+val reset : unit -> unit
+(** Reset the board and returns the score to 0*)
+
 val init_board : unit -> int array array
 (** Initializes a placeholder game board represented as a 2D array. *)
 
