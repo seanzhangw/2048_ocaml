@@ -1,8 +1,8 @@
-open Block
 (** This file handles block movement, random block generation, and block merging
     logic *)
 
-type block = Block.block
+type block = Block.Block.block
+(** type [block] represents a tile in the grid. *)
 
 val compress : block list -> block list
 (** Removes 0's within an block list and returns the block compressed list

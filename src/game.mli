@@ -1,3 +1,6 @@
+(** File controlling the game state and creating a game instance. *)
+
+(** Possible game states the game instance can be in. *)
 type game_state =
   | StartingPage
   | Game
@@ -54,20 +57,26 @@ val main_loop : float -> game_state -> unit
 (** Main control loop of the game, executing different logic blocks based on the
     current game state. *)
 
-val check_foldable_row : Block_logic.block list -> bool (** Checks if a row is foldable. *)
+val check_foldable_row : Block_logic.block list -> bool
+(** Checks if a row is foldable. *)
 
-val check_row_foldable : Block_logic.block list list -> bool (** Checks if a board is foldable, row-wise. *)
+val check_row_foldable : Block_logic.block list list -> bool
+(** Checks if a board is foldable, row-wise. *)
 
-val check_col_foldable : Block_logic.block list list -> bool (** Checks if a board is foldable, column-wise. *)
+val check_col_foldable : Block_logic.block list list -> bool
+(** Checks if a board is foldable, column-wise. *)
 
-val check_foldable : Block_logic.block list list -> bool (** Checks if a board is foldable. *)
+val check_foldable : Block_logic.block list list -> bool
+(** Checks if a board is foldable. *)
 
-val find_2048 : Block_logic.block list list -> bool (** Checks if there is a 2048 value present. *)
+val find_2048 : Block_logic.block list list -> bool
+(** Checks if there is a 2048 value present. *)
 
-val lost_state : unit -> game_state (** Returns to lose state *)
+val lost_state : unit -> game_state
+(** Returns to lose state *)
 
-val won_state: unit -> game_state (** Returns to win state *)
+val won_state : unit -> game_state
+(** Returns to win state *)
 
-val continue_playing_state : unit -> game_state (** Returns to continue playing state *)
-
-
+val continue_playing_state : unit -> game_state
+(** Returns to continue playing state *)
