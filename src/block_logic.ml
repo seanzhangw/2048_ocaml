@@ -165,7 +165,6 @@ let calculate_next (board : block list list) (dir : int) : block list list * int
       let moved_board, scores = d_move board in
       (moved_board, scores)
   | _ -> failwith "Invalid direction"
-(* *)
 
 (* Random block generation *)
 let random_mag () =
@@ -222,6 +221,19 @@ let generate_block board =
       board
   in
   new_board
+
+let check_end board =
+  if count_empty board = 0 then
+    let initial = board in
+    let move_up = calculate_next board move_up in
+    let move_down = calculate_next board move_down in
+    let move_left = calculate_next board move_left in
+    let move_right = calculate_next board move_right in
+    initial = fst move_up
+    && initial = fst move_down
+    && initial = fst move_left
+    && initial = fst move_right
+  else false
 
 let generate_initial () =
   Random.self_init ();
