@@ -46,7 +46,7 @@ let starting_page_logic () =
   next_state
 
 (** Checks for the home page button click and resets the board if clicked. *)
-let check_home_page_button_click state =
+let check_home_page_button_click () =
   if Raylib.is_mouse_button_pressed MouseButton.Left then
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
@@ -182,7 +182,8 @@ let rec game_logic current_time delta_time =
   else high_score := !high_score;
   encouragement_text ();
   let next_state =
-    if is_key_pressed Key.Left then handle_move current_time move_left
+    if check_home_page_button_click () then StartingPage
+    else if is_key_pressed Key.Left then handle_move current_time move_left
     else if is_key_pressed Key.Right then handle_move current_time move_right
     else if is_key_pressed Key.Up then handle_move current_time move_up
     else if is_key_pressed Key.Down then handle_move current_time move_down
