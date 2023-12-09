@@ -4,7 +4,7 @@ open Color
 let win_state () =
     let lines = [
       ("You won!", 40);
-      ("Press escape to return to starting page.", 20);
+      ("Press escape to exit.", 20);
       ("Press s to start a new game.", 20);
       ("Press d to continue playing.", 20)
     ] in

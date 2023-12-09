@@ -9,6 +9,7 @@ open Block_logic
 open L_state
 open Win_state
 open Tetris_logic
+open Block
 
 type game_state =
   | StartingPage
@@ -148,29 +149,25 @@ let tetris_game_logic () =
    Raylib.get_mouse_y () in if mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y
    >= 30 && mouse_y <= 30 + 56 then StartingPage else Game else Game *)
 
-let rec check_foldable_row t = (* Given a 
-   list of integers, checks to see if there
-    are any consecutive equal pairs. Returns
+   let rec check_foldable_row t = (* Given a 
+   list of blocks, checks to see if there
+    are any consecutive equal pairs of values. Returns
    false if there are none, and true if
     some exist. *)
-   print_endline "I am now checking this row:";
-   Printf.printf "[%s]\n" (String.concat "; " (List.map string_of_int t));
   match t with
   | [] -> false
   | h :: [] -> false
-  | a :: (b :: _ as t) -> a = b || check_foldable_row t
+  | a :: (b :: _ as t) -> Block.get_value a = Block.get_value b || check_foldable_row t
 
 let rec check_row_foldable s = (* Given a board, 
 checks to see if it can be moved left or right. Returns
   true if it is able to; returns false if otherwise. *)
-    print_endline "I am now checking this board:";
-  List.iter (fun l -> Printf.printf "[%s]\n" (String.concat "; " (List.map string_of_int l))) s;
   match s with
   | [] -> false
   | h :: [] -> check_foldable_row h
   | h :: (t :: _ as x) -> if check_foldable_row h then true else (check_row_foldable x)
 
-let check_col_foldable (matrix : int list list) = (* Given a board, 
+let check_col_foldable matrix = (* Given a board, 
 checks to see if it can be moved up or down. Returns
   true if it is able to; returns false if otherwise. *)
     let transpose matrix =
@@ -184,22 +181,24 @@ checks to see if it can be moved up or down. Returns
       in
       transposer [] matrix
     in 
-    print_endline "Columns board:";
-    List.iter (fun l -> Printf.printf "[%s]\n" (String.concat "; " (List.map string_of_int l))) (transpose matrix);
     check_row_foldable (transpose matrix)
 
-let check_foldable (matrix : int list list) =
+let check_foldable matrix =
   (* Given a board, 
 checks to see if any further moves on it can be made. Returns true if so and returns false otherwise. *)
   check_row_foldable matrix && check_col_foldable matrix
 
-let find_2048 (board : int list list) : bool = (* Given a board, sees if any 
+let find_2048 (board : block list list) : bool = (* Given a board, sees if any 
    of the elements of the board are 2048. Returns true or false*)
-  List.exists (fun row -> List.exists ((=) 2048) row) board 
+List.exists (fun row ->
+  List.exists (fun block ->
+    get_value block = 2048
+  ) row
+) board
 
 (* Draws and implements the logic for the game page. Continuously checks for key
    input to reset the game *)
-let rec game_logic current_time delta_time =
+(* let rec game_logic current_time delta_time =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
@@ -226,13 +225,13 @@ let rec game_logic current_time delta_time =
   end_drawing ();
   next_state
 
-and handle_move current_time dir =
+let handle_move current_time dir =
   if current_time -. !last_move_time > Constants.move_cooldown then (
     last_move_time := current_time;
     let new_board, score_delta = calculate_next !board dir in 
 
-   if (* checks if game board is invalid *)
-      count_empty (find_zeros new_board) = 0 &&
+    if (* checks if game board is invalid *)
+      count_empty new_board = 0 &&
       check_foldable new_board = false then
         Lost
     else if  (* checks if the board has 2048 *)
@@ -245,25 +244,78 @@ and handle_move current_time dir =
       let final_board = generate_block new_board in
     board := final_board;
     Game)
-    (* else
-      print_endline "LOSING STATE!!!!!" *)
+  )
+  else
+    Game;
 
-  in
 
   let next_state =
-  if is_key_pressed Key.Left then handle_move move_left
-  else if is_key_pressed Key.Right then handle_move move_right
-  else if is_key_pressed Key.Up then handle_move move_up
-  else if is_key_pressed Key.Down then handle_move move_down
-  else Game;
-  in
+    if is_key_pressed Key.Left then handle_move current_time move_left
+    else if is_key_pressed Key.Right then handle_move current_time move_right
+    else if is_key_pressed Key.Up then handle_move current_time move_up
+    else if is_key_pressed Key.Down then handle_move current_time move_down
+    else Game
+
 
   display_tiles_input !board;
   draw_text "Score: " 550 30 30 Color.brown;
   draw_text (string_of_int !score) 670 30 30 Color.beige;
 
   end_drawing ();
-  next_state
+  next_state *)
+
+
+  let rec game_logic current_time delta_time =
+    begin_drawing ();
+    clear_background Color.raywhite;
+    game_page ();
+    let next_state = check_home_page_button_click Game in
+    check_new_game_button_click ();
+  
+    if !score > !high_score then high_score := !score
+    else high_score := !high_score;
+    let next_state = 
+    if is_key_pressed Key.Left then handle_move current_time move_left
+    else if is_key_pressed Key.Right then handle_move current_time move_right
+    else if is_key_pressed Key.Up then handle_move current_time move_up
+    else if is_key_pressed Key.Down then handle_move current_time move_down
+    else Game
+  in 
+    animate delta_time;
+  
+    display_tiles_input !board;
+    draw_text "Score " score_label_pos_x score_label_pos_y score_label_size
+      Color.brown;
+    draw_text (string_of_int !score) score_pos_x score_pos_y score_size
+      Color.beige;
+    draw_text "High Score " hs_label_pos_x hs_label_pos_y hs_label_size
+      Color.brown;
+    draw_text (string_of_int !high_score) hs_pos_x hs_pos_y hs_size Color.beige;
+  
+    end_drawing ();
+    next_state
+  
+  and handle_move current_time dir : (game_state) =
+    if current_time -. !last_move_time > Constants.move_cooldown then (
+      last_move_time := current_time;
+      let new_board, score_delta = calculate_next !board dir in
+  
+      (if (* checks if game board is invalid *)
+        count_empty new_board = 0 &&
+        check_foldable new_board = false then
+          Lost
+      else if  (* checks if the board has 2048 *)
+        find_2048 new_board then (*  && won_alr = false then *)
+          let final_board = generate_block new_board in
+          score := !score + score_delta;
+          board := final_board;
+          Won
+      else 
+        let final_board = generate_block new_board in
+          score := !score + score_delta;
+          board := final_board;
+          Game))
+    else Game
   
 let lost_state () = 
   begin_drawing ();
@@ -301,7 +353,7 @@ let continue_playing_state () =
     let new_board, score_delta = calculate_next !board dir in 
 
    if (* checks if game board is invalid *)
-      count_empty (find_zeros new_board) = 0 &&
+      count_empty new_board = 0 &&
       check_foldable new_board = false then
         Lost
     else (
