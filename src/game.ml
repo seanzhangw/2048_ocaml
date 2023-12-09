@@ -23,6 +23,7 @@ let high_score = ref 0
 let last_move_time = ref 0.
 let board = ref (generate_initial ())
 let current_message = ref ""
+let current_message_pos = ref (60, 100)
 
 (** Initializes the Raylib window with the specified size and frame rate. *)
 let setup () =
@@ -90,34 +91,36 @@ let encouraging_messages =
     "Great move!";
     "Keep it up!";
     "Nice one!";
-    "You're doing well!";
     "Awesome!";
     "Fantastic!";
     "Superb effort!";
+    "Superb!";
+    "Great!";
+    "Slay!";
     "You're on fire!";
     "Incredible skill!";
     "Way to go!";
     "You're a natural!";
-    "Brilliant move!";
-    "You're smashing it!";
-    "Exceptional strategy!";
+    "Brilliant!";
+    "Wonderful!";
+    "Exceptional!";
     "You're a genius!";
     "Unstoppable!";
-    "Amazing progress!";
-    "Keep the streak going!";
+    "Amazing!";
     "Masterful play!";
-    "You're a superstar!";
+    "Superstar!";
     "Phenomenal!";
     "Setting records!";
-    "You make it look easy!";
-    "You're a champion!";
-    "You're leading the way!";
+    "You're a champ!";
     "Spectacular!";
   ]
 
+let encouragement_text_pos =
+  [ (60, 100); (100, 110); (350, 100); (60, 550); (100, 550); (350, 550) ]
+
 let encouragement_text () =
-  Raylib.draw_text !current_message Constants.encouragement_text_pos_x
-    encouragement_text_pos_y encouragement_text_size Color.brown
+  Raylib.draw_text !current_message (fst !current_message_pos)
+    (snd !current_message_pos) encouragement_text_size Color.brown
 
 let reset_current_message () = current_message := ""
 (*Check is button clicked to return to the homepage*)
@@ -227,6 +230,9 @@ and handle_move current_time dir : game_state =
       current_message :=
         List.nth encouraging_messages
           (Random.int (List.length encouraging_messages));
+      current_message_pos :=
+        List.nth encouragement_text_pos
+          (Random.int (List.length encouragement_text_pos));
       Game)
   else Game
 
