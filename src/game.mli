@@ -51,7 +51,7 @@ val handle_move : float -> int -> game_state
 
 val instructions_logic : unit -> game_state
 (** Handles the logic for the instruction page, checking for key input to return
-    to the start page or begin the game. Returns the next game state. *)
+    to begin the game. *)
 
 val main_loop : float -> game_state -> unit
 (** Main control loop of the game, executing different logic blocks based on the
