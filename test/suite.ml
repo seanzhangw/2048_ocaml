@@ -137,12 +137,26 @@ let transpose_test expected input _ =
     expected_str actual_str
 
 (* Test function for the u_move funtion *)
-let u_move_test out in1 _ =
-  assert_equal ~printer:pp_block_matrix_int_pair out (u_move in1)
+let u_move_test expected input _ =
+  let expected_str = pp_block_matrix_int_pair expected in
+  let actual_str = pp_block_matrix_int_pair (u_move input) in
+  assert_equal
+    ~printer:(fun x -> x)
+    ~msg:
+      ("function: u_move\ninput: " ^ pp_block_matrix input ^ "\nexpected: "
+     ^ expected_str ^ "\nactual: " ^ actual_str)
+    expected_str actual_str
 
 (* Test function for the d_move funtion *)
-let d_move_test out in1 _ =
-  assert_equal ~printer:pp_block_matrix_int_pair out (d_move in1)
+let d_move_test expected input _ =
+  let expected_str = pp_block_matrix_int_pair expected in
+  let actual_str = pp_block_matrix_int_pair (d_move input) in
+  assert_equal
+    ~printer:(fun x -> x)
+    ~msg:
+      ("function: d_move\ninput: " ^ pp_block_matrix input ^ "\nexpected: "
+     ^ expected_str ^ "\nactual: " ^ actual_str)
+    expected_str actual_str
 
 (* Test function for the calculate_next funtion *)
 
@@ -335,6 +349,30 @@ let right_move_complex_merge_output = [ 0; 0; 4; 4 ]
 let right_move_single_nonzero_input = [ 0; 0; 0; 2 ]
 let only_zero = [ 0; 0; 0; 0 ]
 
+let identity_matrix =
+  [ [ 1; 0; 0; 0 ]; [ 0; 1; 0; 0 ]; [ 0; 0; 1; 0 ]; [ 0; 0; 0; 1 ] ]
+
+let identity_matrix_u =
+  [ [ 1; 1; 1; 1 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let identity_matrix_d =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 1; 1; 1; 1 ] ]
+
+let zero_matrix =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let standard_matrix =
+  [ [ 2; 0; 4; 2 ]; [ 2; 4; 0; 4 ]; [ 0; 2; 4; 2 ]; [ 2; 0; 2; 0 ] ]
+
+let standard_matrix_u =
+  [ [ 4; 4; 8; 2 ]; [ 2; 2; 2; 4 ]; [ 0; 0; 0; 2 ]; [ 0; 0; 0; 0 ] ]
+
+let standard_matrix_d =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 2 ]; [ 2; 4; 8; 4 ]; [ 4; 2; 2; 2 ] ]
+
+let no_merge_matrix =
+  [ [ 1; 2; 3; 4 ]; [ 4; 3; 2; 1 ]; [ 1; 2; 3; 4 ]; [ 4; 3; 2; 1 ] ]
+
 (* Test cases testing the move functions *)
 let move_tests =
   [
@@ -392,13 +430,39 @@ let move_tests =
           (to_block_list right_move_single_nonzero_input);
     "Right move with only zero"
     >:: r_move_test (to_block_list only_zero, 0) 0 (to_block_list only_zero);
+    "Testing up move with empty matrix"
+    >:: u_move_test
+          (to_block_matrix zero_matrix, 0)
+          (to_block_matrix zero_matrix);
+    "Testing down move with empty matrix"
+    >:: d_move_test
+          (to_block_matrix zero_matrix, 0)
+          (to_block_matrix zero_matrix);
+    "Testing up move with identity matrix"
+    >:: u_move_test
+          (to_block_matrix identity_matrix_u, 0)
+          (to_block_matrix identity_matrix);
+    "Testing down move with identity matrix"
+    >:: d_move_test
+          (to_block_matrix identity_matrix_d, 0)
+          (to_block_matrix identity_matrix);
+    "Testing up move with standard matrix"
+    >:: u_move_test
+          (to_block_matrix standard_matrix_u, 12)
+          (to_block_matrix standard_matrix);
+    "Testing down move with standard matrix"
+    >:: d_move_test
+          (to_block_matrix standard_matrix_d, 12)
+          (to_block_matrix standard_matrix);
+    "Testing up move with no merge matrix"
+    >:: u_move_test
+          (to_block_matrix no_merge_matrix, 0)
+          (to_block_matrix no_merge_matrix);
+    "Testing down move with no merge matrix"
+    >:: d_move_test
+          (to_block_matrix no_merge_matrix, 0)
+          (to_block_matrix no_merge_matrix);
   ]
-
-let identity_matrix =
-  [ [ 1; 0; 0; 0 ]; [ 0; 1; 0; 0 ]; [ 0; 0; 1; 0 ]; [ 0; 0; 0; 1 ] ]
-
-let zero_matrix =
-  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
 
 let matrix1 =
   [ [ 1; 2; 3; 4 ]; [ 5; 6; 7; 8 ]; [ 9; 10; 11; 12 ]; [ 13; 14; 15; 16 ] ]

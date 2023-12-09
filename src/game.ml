@@ -23,6 +23,7 @@ let high_score = ref 0
 let last_move_time = ref 0.
 let board = ref (generate_initial ())
 let current_message = ref ""
+let current_message_pos = ref (60, 100)
 
 (** Initializes the Raylib window with the specified size and frame rate. *)
 let setup () =
@@ -45,7 +46,7 @@ let starting_page_logic () =
   next_state
 
 (** Checks for the home page button click and resets the board if clicked. *)
-let check_home_page_button_click : bool =
+let check_home_page_button_click state =
   if Raylib.is_mouse_button_pressed MouseButton.Left then
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
@@ -90,34 +91,36 @@ let encouraging_messages =
     "Great move!";
     "Keep it up!";
     "Nice one!";
-    "You're doing well!";
     "Awesome!";
     "Fantastic!";
     "Superb effort!";
+    "Superb!";
+    "Great!";
+    "Slay!";
     "You're on fire!";
     "Incredible skill!";
     "Way to go!";
     "You're a natural!";
-    "Brilliant move!";
-    "You're smashing it!";
-    "Exceptional strategy!";
+    "Brilliant!";
+    "Wonderful!";
+    "Exceptional!";
     "You're a genius!";
     "Unstoppable!";
-    "Amazing progress!";
-    "Keep the streak going!";
+    "Amazing!";
     "Masterful play!";
-    "You're a superstar!";
+    "Superstar!";
     "Phenomenal!";
     "Setting records!";
-    "You make it look easy!";
-    "You're a champion!";
-    "You're leading the way!";
+    "You're a champ!";
     "Spectacular!";
   ]
 
+let encouragement_text_pos =
+  [ (60, 100); (100, 110); (350, 100); (60, 550); (100, 550); (350, 550) ]
+
 let encouragement_text () =
-  Raylib.draw_text !current_message Constants.encouragement_text_pos_x
-    encouragement_text_pos_y encouragement_text_size Color.brown
+  Raylib.draw_text !current_message (fst !current_message_pos)
+    (snd !current_message_pos) encouragement_text_size Color.brown
 
 let reset_current_message () = current_message := ""
 
@@ -172,15 +175,18 @@ let rec game_logic current_time delta_time =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
+
+  check_new_game_button_click ();
+
+  if !score > !high_score then high_score := !score
+  else high_score := !high_score;
+  encouragement_text ();
   let next_state =
-    if !score > !high_score then high_score := !score
-    else high_score := !high_score;
-    encouragement_text ();
-    if check_home_page_button_click then StartingPage
-    else if is_key_pressed Key.Left then handle_move current_time move_left
+    if is_key_pressed Key.Left then handle_move current_time move_left
     else if is_key_pressed Key.Right then handle_move current_time move_right
     else if is_key_pressed Key.Up then handle_move current_time move_up
     else if is_key_pressed Key.Down then handle_move current_time move_down
+    else if check_home_page_button_click () then StartingPage
     else Game
   in
   animate delta_time;
@@ -213,6 +219,21 @@ and handle_move current_time dir : game_state =
       score := !score + score_delta;
       board := final_board;
       Won)
+    else if
+      (* checks if game board is invalid *)
+      count_empty new_board = 0 && check_foldable new_board = false
+    then Lost
+    else if (* checks if the board has 2048 *)
+            find_2048 new_board then (
+      (* && won_alr = false then *)
+      let final_board = generate_block new_board in
+      score := !score + score_delta;
+      board := final_board;
+      Won)
+    else if new_board = !board then (
+      score := !score + score_delta;
+      board := new_board;
+      Game)
     else
       let final_board = generate_block new_board in
       score := !score + score_delta;
@@ -220,6 +241,9 @@ and handle_move current_time dir : game_state =
       current_message :=
         List.nth encouraging_messages
           (Random.int (List.length encouraging_messages));
+      current_message_pos :=
+        List.nth encouragement_text_pos
+          (Random.int (List.length encouragement_text_pos));
       Game)
   else Game
 
