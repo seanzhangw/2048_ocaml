@@ -14,28 +14,46 @@ module Block = struct
     mutable target_pos : float * float;
     mutable state : block_state;
   }
-
+ (** Convert a block to its string representation. *)
   let to_string block = Printf.sprintf "%d" block.value
+    
+  (** Check if two blocks are equal based on their values and positions. *)
   let block_equal b1 b2 = b1.value = b2.value && b1.current_pos = b2.current_pos
 
+  (** Get the current grid position of a block. *)
   let get_current_grid_pos (block : block) =
     block_board_mapping block.current_pos
-
+  
+  (** Set the current grid position of a block. *) 
   let set_current_grid_pos (block : block) (col : int) (row : int) =
     block.current_pos <- block_position_mapping (col, row)
-
+  
+  (** Get the target grid position of a block. *)
   let get_target_grid_pos (block : block) = block_board_mapping block.target_pos
-
+  
+  (** Set the target grid position of a block. *)
   let set_target_grid_pos (block : block) (col : int) (row : int) =
     block.target_pos <- block_position_mapping (col, row)
 
+  (** Get the current actual position (float) of a block. *)
   let get_current_actual_pos (block : block) = block.current_pos
+  
+  (** Get the target actual position (float) of a block. *)
   let get_target_actual_pos (block : block) = block.target_pos
+  
+  (** Get the value of a block. *)
   let get_value (block : block) = block.value
+  
+  (** Set the value of a block. *)
   let set_value (block : block) (value : int) = block.value <- value
+  
+  (** Get the state of a block. *)
   let get_state (block : block) = block.state
+
+  (** Set the state of a block. *)
   let set_state (block : block) (state : block_state) = block.state <- state
 
+(** Create a stationary block with a given value and grid position. *)
   let place_block (value : int) (pos : int * int) : block =
     {
       value;
@@ -44,6 +62,7 @@ module Block = struct
       state = Stationary;
     }
 
+(** Create a blank block with a given value and grid position. *)
   let place_blank_block (value : int) (pos : int * int) : block =
     {
       value;
@@ -52,6 +71,7 @@ module Block = struct
       state = Blank;
     }
 
+(** Print the details of each block in a board. *)
   let print_block_list_list board =
     List.iteri
       (fun i row ->
@@ -95,6 +115,7 @@ module Block = struct
         end
     | Blank -> ()
 
+  (** An empty game board. *)
   let empty_board =
     [
       [
