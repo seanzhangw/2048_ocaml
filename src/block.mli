@@ -7,7 +7,7 @@ module Block : sig
   type block_state =
     | Stationary
     | Moving of float
-    | Merging
+    | Merging of float
     | Emerging of float
     | Blank
 

@@ -4,7 +4,7 @@ module Block = struct
   type block_state =
     | Stationary
     | Moving of float
-    | Merging
+    | Merging of float
     | Emerging of float
     | Blank
 
@@ -102,7 +102,16 @@ module Block = struct
               (snd block.current_pos) (snd block.target_pos) new_progress;
           block.state <- Moving new_progress
         end
-    | Merging -> ()
+    | Merging progress ->
+        let new_progress =
+          progress +. (Constants.block_scaling *. delta_time)
+        in
+        if new_progress >= 1.0 then begin
+          block.state <- Stationary
+        end
+        else begin
+          block.state <- Merging new_progress
+        end
     | Emerging progress ->
         let new_progress =
           progress +. (Constants.block_scaling *. delta_time)
