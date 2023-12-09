@@ -6,13 +6,11 @@ open Constants
 open Instructions
 open Start
 open Block_logic
-open Tetris_logic
 
 type game_state =
   | StartingPage
   | Game
   | InstructionsPage
-  | Tetris
 
 let score = ref 0
 let high_score = ref 0
@@ -20,8 +18,6 @@ let last_move_time = ref 0.
 
 (*Stores the data we are displaying for the board.*)
 let board = ref (generate_initial ())
-let tetris_board = ref (Array.init rows (fun _ -> Array.make columns 0))
-let is_tetris_initialized = ref false
 
 (* Initiates the RayLib window with window size and frame rate *)
 let setup () =
@@ -30,14 +26,6 @@ let setup () =
 
 (* Placeholder initialization *)
 let init_board () = Array.make_matrix 5 4 0
-
-(* Function to initialize the Tetris board *)
-let init_tetris_board () =
-  if not !is_tetris_initialized then begin
-    tetris_board := init_board ();
-    (* add_new_block_in_top_row !tetris_board; *)
-    is_tetris_initialized := true
-  end
 
 (* Draws and implements the logic for the start page. Continuously checks for
    key input to progress to instructions or game state *)
@@ -93,56 +81,6 @@ let animate delta_time =
 
   display_tiles_input !board
 
-let new_board tetris_board block =
-  if Array.length tetris_board > 0 then tetris_board.(0) <- Array.of_list block
-
-let tetris_game_logic () =
-  begin_drawing ();
-  clear_background Color.raywhite;
-  tetris_page ();
-  let next_state = check_home_page_button_click Tetris in
-  (* Update the state based on button click *)
-  check_new_game_button_click ();
-  new_board !tetris_board (generate_random_block ());
-  update_board !tetris_board;
-
-  end_drawing ();
-  next_state
-
-(* Return the updated state *)
-(* Maintain TetrisGame state or transition to others if needed *)
-
-(*Check is button clicked to return to the homepage*)
-(* let check_home_page_button_click () = if Raylib.is_mouse_button_pressed
-   MouseButton.Left then let mouse_x = Raylib.get_mouse_x () in let mouse_y =
-   Raylib.get_mouse_y () in if mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y
-   >= 30 && mouse_y <= 30 + 56 then StartingPage else Game else Game *)
-
-let new_board tetris_board block =
-  if Array.length tetris_board > 0 then tetris_board.(0) <- Array.of_list block
-
-let tetris_game_logic () =
-  begin_drawing ();
-  clear_background Color.raywhite;
-  tetris_page ();
-  let next_state = check_home_page_button_click Tetris in
-  (* Update the state based on button click *)
-  check_new_game_button_click ();
-  new_board !tetris_board (generate_random_block ());
-  update_board !tetris_board;
-
-  end_drawing ();
-  next_state
-
-(* Return the updated state *)
-(* Maintain TetrisGame state or transition to others if needed *)
-
-(*Check is button clicked to return to the homepage*)
-(* let check_home_page_button_click () = if Raylib.is_mouse_button_pressed
-   MouseButton.Left then let mouse_x = Raylib.get_mouse_x () in let mouse_y =
-   Raylib.get_mouse_y () in if mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y
-   >= 30 && mouse_y <= 30 + 56 then StartingPage else Game else Game *)
-
 (* Draws and implements the logic for the game page. Continuously checks for key
    input to reset the game *)
 let rec game_logic current_time delta_time =
@@ -194,7 +132,7 @@ let instructions_logic () =
   let next_state =
     if is_key_pressed Key.Escape then StartingPage
     else if is_key_pressed Key.O then Game
-    else if is_key_pressed Key.T then Tetris
+      (* else if is_key_pressed Key.T then Tetris *)
     else InstructionsPage
   in
   end_drawing ();
@@ -213,7 +151,6 @@ let rec main_loop last_time state =
       | StartingPage -> starting_page_logic ()
       | Game -> game_logic current_time delta_time
       | InstructionsPage -> instructions_logic ()
-      | Tetris -> tetris_game_logic ()
     in
     let frame_end_time = gettimeofday () in
     let frame_duration = frame_end_time -. current_time in
