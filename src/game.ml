@@ -259,7 +259,7 @@ clear_background Color.raywhite;
 Instructions.instructions ();
 let next_state =
   if is_key_pressed Key.Escape then StartingPage
-  else if is_key_pressed Key.O then Game
+  else if is_key_pressed Key.S then Game
   else InstructionsPage
 in
 end_drawing ();

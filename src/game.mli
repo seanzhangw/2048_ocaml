@@ -2,6 +2,9 @@ type game_state =
   | StartingPage
   | Game
   | InstructionsPage
+  | Lost
+  | Won
+  | ContinuePlaying
 
 val score : int ref
 (** Reference to the current score in the game. *)
@@ -39,7 +42,7 @@ val game_logic : float -> float -> game_state
 (** Handles the game logic, checking for key input, button clicks, and updating
     the board. Returns the next game state. *)
 
-val handle_move : float -> int -> unit
+val handle_move : float -> int -> game_state
 (** Handles the movement of the game board based on user input and updates the
     game state accordingly. *)
 
@@ -50,3 +53,21 @@ val instructions_logic : unit -> game_state
 val main_loop : float -> game_state -> unit
 (** Main control loop of the game, executing different logic blocks based on the
     current game state. *)
+
+val check_foldable_row : Block_logic.block list -> bool (** Checks if a row is foldable. *)
+
+val check_row_foldable : Block_logic.block list list -> bool (** Checks if a board is foldable, row-wise. *)
+
+val check_col_foldable : Block_logic.block list list -> bool (** Checks if a board is foldable, column-wise. *)
+
+val check_foldable : Block_logic.block list list -> bool (** Checks if a board is foldable. *)
+
+val find_2048 : Block_logic.block list list -> bool (** Checks if there is a 2048 value present. *)
+
+val lost_state : unit -> game_state (** Returns to lose state *)
+
+val won_state: unit -> game_state (** Returns to win state *)
+
+val continue_playing_state : unit -> game_state (** Returns to continue playing state *)
+
+
