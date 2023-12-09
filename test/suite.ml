@@ -161,6 +161,8 @@ let zeros_at_start = [ 0; 0; 1; 2 ]
 let zeros_at_end = [ 1; 2; 0; 0 ]
 let zero_on_left = [ 0; 1; 2; 3 ]
 let zero_on_right = [ 1; 2; 3; 0 ]
+let alternate_zeros_input = [ 0; 2; 0; 4; 0 ]
+let alternate_zeros_output = [ 2; 4 ]
 
 (* Test cases testing compress *)
 let compress_tests =
@@ -204,6 +206,10 @@ let compress_tests =
     >:: compress_test
           (to_block_list one_to_three_list)
           (to_block_list zero_on_right);
+    "Testing alternating zeros"
+    >:: compress_test
+          (to_block_list alternate_zeros_output)
+          (to_block_list alternate_zeros_input);
   ]
 
 let list_of_zeros = [ 0; 0; 0; 0 ]
@@ -224,6 +230,10 @@ let multiple_merge_right_input = [ 4; 4; 2; 2 ]
 let multiple_merge_right_output = [ 8; 4 ]
 let merge_trailing_zero_right_input = [ 8; 2; 2; 0 ]
 let merge_trailing_zero_right_output = [ 8; 4; 0 ]
+let l_merge_leading_zeros_input = [ 0; 0; 2; 2 ]
+let l_merge_leading_zeros_output = [ 0; 4 ]
+let r_merge_leading_zeros_input = [ 2; 2; 0; 0 ]
+let r_merge_leading_zeros_output = [ 4; 0 ]
 
 (* Test cases testing the merge functions *)
 let merge_tests =
@@ -268,6 +278,14 @@ let merge_tests =
     >:: r_merge_test
           (to_block_list merge_trailing_zero_right_output, 4)
           (to_block_list merge_trailing_zero_right_input);
+    "Merge with leading zeros in left merge"
+    >:: l_merge_test
+          (to_block_list l_merge_leading_zeros_output, 4)
+          (to_block_list l_merge_leading_zeros_input);
+    "Merge with leading zeros in right merge"
+    >:: l_merge_test
+          (to_block_list r_merge_leading_zeros_output, 4)
+          (to_block_list r_merge_leading_zeros_input);
   ]
 
 let left_move_input = [ 2; 2; 0; 2 ]
@@ -278,6 +296,7 @@ let left_move_no_merge_input = [ 2; 0; 4; 2 ]
 let left_move_no_merge_output = [ 2; 4; 2; 0 ]
 let left_move_complex_merge_input = [ 2; 2; 2; 2 ]
 let left_move_complex_merge_output = [ 4; 4; 0; 0 ]
+let left_move_single_nonzero_input = [ 2; 0; 0; 0 ]
 let right_move_input = [ 2; 2; 0; 2 ]
 let right_move_output = [ 0; 0; 2; 4 ]
 let right_move_with_merge_input = [ 2; 2; 0; 0 ]
@@ -286,6 +305,8 @@ let right_move_no_merge_input = [ 2; 0; 4; 2 ]
 let right_move_no_merge_output = [ 0; 2; 4; 2 ]
 let right_move_complex_merge_input = [ 2; 2; 2; 2 ]
 let right_move_complex_merge_output = [ 0; 0; 4; 4 ]
+let right_move_single_nonzero_input = [ 0; 0; 0; 2 ]
+let only_zero = [ 0; 0; 0; 0 ]
 
 (* Test cases testing the move functions *)
 let move_tests =
@@ -295,7 +316,7 @@ let move_tests =
           (to_block_list left_move_output, 4)
           0
           (to_block_list left_move_input);
-    "Left move with merge\n   and trailing zeros"
+    "Left move with merge and trailing zeros"
     >:: l_move_test
           (to_block_list left_move_with_merge_output, 4)
           0
@@ -310,6 +331,13 @@ let move_tests =
           (to_block_list left_move_complex_merge_output, 8)
           0
           (to_block_list left_move_complex_merge_input);
+    "Left move with single non-zero"
+    >:: l_move_test
+          (to_block_list left_move_single_nonzero_input, 0)
+          0
+          (to_block_list left_move_single_nonzero_input);
+    "Left move with only zero"
+    >:: l_move_test (to_block_list only_zero, 0) 0 (to_block_list only_zero);
     "Testing\n right move"
     >:: r_move_test
           (to_block_list right_move_output, 4)
@@ -330,6 +358,13 @@ let move_tests =
           (to_block_list right_move_complex_merge_output, 8)
           0
           (to_block_list right_move_complex_merge_input);
+    "Right move with single non-zero"
+    >:: r_move_test
+          (to_block_list right_move_single_nonzero_input, 0)
+          0
+          (to_block_list right_move_single_nonzero_input);
+    "Right move with only zero"
+    >:: r_move_test (to_block_list only_zero, 0) 0 (to_block_list only_zero);
   ]
 
 let identity_matrix =
@@ -361,6 +396,10 @@ let negative_values_matrix = [ [ -1; -2; -3 ]; [ -4; -5; -6 ]; [ -7; -8; -9 ] ]
 
 let negative_values_matrix_t =
   [ [ -1; -4; -7 ]; [ -2; -5; -8 ]; [ -3; -6; -9 ] ]
+
+let single_element_matrix = [ [ 1 ] ]
+let random_values_nonsquare = [ [ 9; 2; 5 ]; [ 1; 7; 4 ]; [ 3; 6; 8 ] ]
+let random_values_nonsquare_t = [ [ 9; 1; 3 ]; [ 2; 7; 6 ]; [ 5; 4; 8 ] ]
 
 (* Test cases testing the transpose function *)
 let transpose_tests =
@@ -397,6 +436,14 @@ let transpose_tests =
     >:: transpose_test
           (to_block_matrix negative_values_matrix)
           (to_block_matrix negative_values_matrix_t);
+    "Transpose of a single-element matrix"
+    >:: transpose_test
+          (to_block_matrix single_element_matrix)
+          (to_block_matrix single_element_matrix);
+    "Transpose of a random value non-square matrix"
+    >:: transpose_test
+          (to_block_matrix random_values_nonsquare)
+          (to_block_matrix random_values_nonsquare_t);
   ]
 
 let identity_matrix_r =
