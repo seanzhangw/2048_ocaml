@@ -1,4 +1,5 @@
 open Raylib
+open Image
 open Constants
 
 let starting_page () =

@@ -15,6 +15,9 @@ module Block = struct
     mutable state : block_state;
   }
 
+  let to_string block = Printf.sprintf "%d" block.value
+  let block_equal b1 b2 = b1.value = b2.value && b1.current_pos = b2.current_pos
+
   let get_current_grid_pos (block : block) =
     block_board_mapping block.current_pos
 
@@ -119,5 +122,4 @@ module Block = struct
         place_block 0 (3, 3);
       ];
     ]
-  (* Additional functions and logic can be added here *)
 end
