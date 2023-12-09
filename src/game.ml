@@ -15,20 +15,18 @@ type game_state =
 let score = ref 0
 let high_score = ref 0
 let last_move_time = ref 0.
-
-(*Stores the data we are displaying for the board.*)
 let board = ref (generate_initial ())
 
-(* Initiates the RayLib window with window size and frame rate *)
+(** Initializes the Raylib window with the specified size and frame rate. *)
 let setup () =
   init_window screen_width screen_height "raylib [core] example - basic window";
   set_target_fps fps
 
-(* Placeholder initialization *)
+(** Placeholder initialization for the game board. *)
 let init_board () = Array.make_matrix 5 4 0
 
-(* Draws and implements the logic for the start page. Continuously checks for
-   key input to progress to instructions or game state *)
+(** Handles the logic for the starting page, checking for key input to progress
+    to instructions or the game state. *)
 let starting_page_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -39,6 +37,7 @@ let starting_page_logic () =
   end_drawing ();
   next_state
 
+(** Checks for the home page button click and resets the board if clicked. *)
 let check_home_page_button_click state =
   if Raylib.is_mouse_button_pressed MouseButton.Left then
     let mouse_x = Raylib.get_mouse_x () in
@@ -49,7 +48,6 @@ let check_home_page_button_click state =
       && mouse_y >= home_pos_y
       && mouse_y <= home_pos_y + home_height
     then (
-      (* Reset the board *)
       board := generate_initial ();
       score := 0;
       Utils.write_to_file Constants.file_path (string_of_int !high_score);
@@ -57,9 +55,8 @@ let check_home_page_button_click state =
     else state
   else state
 
-(** Logic behind handling the button click for the new game button *)
+(** Handles the button click logic for the new game button. *)
 let check_new_game_button_click () =
-  (* If the mouse is over the button and the left mouse button is pressed *)
   if Raylib.is_mouse_button_pressed MouseButton.Left then (
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
@@ -68,11 +65,11 @@ let check_new_game_button_click () =
       && mouse_x <= new_pos_x + new_width
       && mouse_y >= new_pos_y
       && mouse_y <= new_pos_y + new_height
-    then (* Reset the board *)
-      board := generate_initial ();
+    then board := generate_initial ();
     score := 0;
     Utils.write_to_file Constants.file_path (string_of_int !high_score))
 
+(** Animates the game board based on the elapsed time. *)
 let animate delta_time =
   List.iter
     (fun row ->
@@ -81,8 +78,8 @@ let animate delta_time =
 
   display_tiles_input !board
 
-(* Draws and implements the logic for the game page. Continuously checks for key
-   input to reset the game *)
+(** Handles the game logic, checking for key input, button clicks, and updating
+    the board. *)
 let rec game_logic current_time delta_time =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -123,8 +120,8 @@ and handle_move current_time dir =
       board := final_board)
   else ()
 
-(* Draws and implements the logic for the instruction page. Continuously checks
-   for key input to return to start page or begin the game *)
+(** Handles the logic for the instruction page, checking for key input to return
+    to the start page or begin the game. *)
 let instructions_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -132,17 +129,15 @@ let instructions_logic () =
   let next_state =
     if is_key_pressed Key.Escape then StartingPage
     else if is_key_pressed Key.O then Game
-      (* else if is_key_pressed Key.T then Tetris *)
     else InstructionsPage
   in
   end_drawing ();
   next_state
 
-(* Main control loop of the game. Depending on the state of the game, a
-   different logic block is executed *)
+(** Main control loop of the game, executing different logic blocks based on the
+    current game state. *)
 let rec main_loop last_time state =
-  let open Unix in
-  let current_time = gettimeofday () in
+  let current_time = Unix.gettimeofday () in
   let delta_time = current_time -. last_time in
   if Raylib.window_should_close () then Raylib.close_window ()
   else
@@ -152,13 +147,13 @@ let rec main_loop last_time state =
       | Game -> game_logic current_time delta_time
       | InstructionsPage -> instructions_logic ()
     in
-    let frame_end_time = gettimeofday () in
+    let frame_end_time = Unix.gettimeofday () in
     let frame_duration = frame_end_time -. current_time in
     let frame_target = 1.0 /. float_of_int fps in
     let sleep_duration = max 0.0 (frame_target -. frame_duration) in
-    ignore (select [] [] [] sleep_duration);
+    ignore (Unix.select [] [] [] sleep_duration);
 
     main_loop current_time next_state
 
+(* Start the main loop with the StartingPage state *)
 let () = setup ()
-(* start the main loop with the StartingPage state *)
