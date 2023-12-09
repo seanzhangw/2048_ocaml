@@ -144,22 +144,27 @@ let d_move (board : block list list) : block list list * int =
   correct_pos_state_vertical final_board;
   (final_board, List.fold_left ( + ) 0 scores)
 
-let calculate_next (board : block list list) (dir : int) : block list list * int
-    =
-  match dir with
-  | dir when dir = move_left ->
-      let moved_board, scores = List.split (List.mapi l_move board) in
-      (moved_board, List.fold_left ( + ) 0 scores)
-  | dir when dir = move_right ->
-      let moved_board, scores = List.split (List.mapi r_move board) in
-      (moved_board, List.fold_left ( + ) 0 scores)
-  | dir when dir = move_up ->
-      let moved_board, scores = u_move board in
-      (moved_board, scores)
-  | dir when dir = move_down ->
-      let moved_board, scores = d_move board in
-      (moved_board, scores)
-  | _ -> failwith "Invalid direction"
+(* Shifts the 4x4 board left, right, up, or down depending on the input
+   parameter. The board is expected as an int list list and the function returns
+   the new board. ex. calculate_next [[2; 2; 0; 0]; [0; 0; 0; 0]; [4; 4; 8; 0];
+   [0; 0; 2; 0]] move_left -> [[4; 0; 0; 0]; [0; 0; 0; 0]; [8; 8; 0; 0]; [2; 0;
+   0; 0]]*)
+   let calculate_next (board : block list list) (dir : int) : block list list * int =
+    match dir with
+    | dir when dir = move_left ->
+        let moved_board, scores = List.split (List.mapi l_move board) in
+        (moved_board, List.fold_left ( + ) 0 scores)
+    | dir when dir = move_right ->
+        let moved_board, scores = List.split (List.mapi r_move board) in
+        (moved_board, List.fold_left ( + ) 0 scores)
+    | dir when dir = move_up ->
+        let moved_board, scores = u_move board in
+        (moved_board, scores)
+    | dir when dir = move_down ->
+        let moved_board, scores = d_move board in
+        (moved_board, scores)
+    | _ -> failwith "Invalid direction"
+  (* *)
 
 (* Random block generation *)
 let random_mag () =

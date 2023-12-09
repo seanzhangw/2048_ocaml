@@ -1,7 +1,10 @@
-type block = Block.Block.block
-(** This file handles functions to draw the 2048 game interface, including the 
-    initial grid, home page button, new game button, individual blocks, and the 
+(** This file handles functions to draw the 2048 game interface, including the
+    initial grid, home page button, new game button, individual blocks, and the
     main game page *)
+
+type block = Block.Block.block
+(** type [block] represents a tile in the grid. *)
+
 val draw_init_grid : unit -> unit
 (** [draw_init_grid ()] draws the initial grid for the game board. *)
 
@@ -21,4 +24,3 @@ val display_tiles_input : block list list -> unit
 val game_page : unit -> unit
 (** [game_page ()] draws the main content of the game page, including title and
     buttons. *)
-

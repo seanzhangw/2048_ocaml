@@ -1,3 +1,5 @@
+(** The [Block] module represents a 2048 tile. *)
+
 (** A [Block] represents a 2048 tile. *)
 module Block : sig
   (** [block_state] represents the current behavior of the block. The block can
