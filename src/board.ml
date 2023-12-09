@@ -4,17 +4,13 @@ open Block
 
 type block = Block.block
 
+(* Draws the initial grid for the game board *)
 let draw_init_grid () =
   let extended_square_size = square_size + spacing in
-
-  (* includes the size of the square plus spacing *)
   let grid_size = num_squares * extended_square_size in
-
-  (* Calculate positions for centering the grid on the screen *)
   let grid_x = (screen_width - grid_size + spacing) / 2 in
   let grid_y = ((screen_height - grid_size + spacing) / 2) + 40 in
 
-  (* Set location for dark gray squares including the margin area *)
   for i = 0 to num_squares - 1 do
     for j = 0 to num_squares - 1 do
       let x = grid_x + (i * extended_square_size) in
@@ -25,12 +21,9 @@ let draw_init_grid () =
         (extended_square_size + spacing)
         (extended_square_size + spacing)
         Color.brown
-      (* dark gray *)
     done
   done;
 
-  (* Set location for the regular squares on top of the dark gray background
-     squares *)
   for i = 0 to num_squares - 1 do
     for j = 0 to num_squares - 1 do
       let x = grid_x + (i * extended_square_size) in
@@ -42,9 +35,8 @@ let draw_init_grid () =
   done;
   ()
 
-(* Draw new home page button*)
+(* Draws the home page button with the game title *)
 let draw_home_page_button () =
-  (* Check if the mouse is over the button *)
   let mouse_x = Raylib.get_mouse_x () in
   let mouse_y = Raylib.get_mouse_y () in
   let is_mouse_over_button =
@@ -54,7 +46,6 @@ let draw_home_page_button () =
     && mouse_y <= home_pos_y + home_height
   in
 
-  (* Change the button's color based on mouse hover *)
   let button_text =
     if is_mouse_over_button then Color.darkbrown else Color.brown
   in
@@ -62,9 +53,8 @@ let draw_home_page_button () =
     Color.raywhite;
   Raylib.draw_text "2048" home_pos_x home_pos_y home_text_size button_text
 
-(** Draws new game button *)
+(* Draws the new game button with hover effects *)
 let draw_new_game_button () =
-  (* Check if the mouse is over the button *)
   let mouse_x = Raylib.get_mouse_x () in
   let mouse_y = Raylib.get_mouse_y () in
   let is_mouse_over_button =
@@ -73,8 +63,6 @@ let draw_new_game_button () =
     && mouse_y >= new_pos_y
     && mouse_y <= new_pos_y + new_height
   in
-
-  (* Change the button's color based on mouse hover *)
   let button_color =
     if is_mouse_over_button then Color.brown else Color.beige
   in
@@ -85,6 +73,7 @@ let draw_new_game_button () =
   Raylib.draw_text "New Game" (new_pos_x + 26) (new_pos_y + 20) new_text_size
     button_text
 
+(* Draws a single block on the game board with its numeric value *)
 let draw_block (block : block) (size : int) =
   let x, y = block.current_pos in
   let x = int_of_float x in
@@ -99,7 +88,7 @@ let draw_block (block : block) (size : int) =
       (y + (square_size / 2) - 15)
       30 Raylib.Color.white
 
-(** Displays the durrent board data onto the board *)
+(** Displays the current board data onto the board *)
 let rec display_tiles_input (tiles : block list list) =
   let render_movement block = draw_block block square_size in
   let render_emerge block progress =
@@ -119,11 +108,9 @@ let rec display_tiles_input (tiles : block list list) =
         row)
     tiles
 
-(** Calls all of the neccesary functions that displays the game page*)
+(* Draws the main content of the game page, including title and buttons *)
 let game_page () =
   draw_text "2048" 37 30 80 Color.brown;
   draw_home_page_button ();
-  (* add button for instructions *)
-  (* add button for new game *)
   draw_new_game_button ();
   draw_init_grid ()
