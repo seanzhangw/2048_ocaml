@@ -45,7 +45,7 @@ let starting_page_logic () =
   next_state
 
 (** Checks for the home page button click and resets the board if clicked. *)
-let check_home_page_button_click state =
+let check_home_page_button_click : bool =
   if Raylib.is_mouse_button_pressed MouseButton.Left then
     let mouse_x = Raylib.get_mouse_x () in
     let mouse_y = Raylib.get_mouse_y () in
@@ -58,9 +58,9 @@ let check_home_page_button_click state =
       board := generate_initial ();
       score := 0;
       Utils.write_to_file Constants.file_path (string_of_int !high_score);
-      StartingPage)
-    else state
-  else state
+      true)
+    else false
+  else false
 
 (** Handles the button click logic for the new game button. *)
 let check_new_game_button_click () =
@@ -120,11 +120,6 @@ let encouragement_text () =
     encouragement_text_pos_y encouragement_text_size Color.brown
 
 let reset_current_message () = current_message := ""
-(*Check is button clicked to return to the homepage*)
-(* let check_home_page_button_click () = if Raylib.is_mouse_button_pressed
-   MouseButton.Left then let mouse_x = Raylib.get_mouse_x () in let mouse_y =
-   Raylib.get_mouse_y () in if mouse_x >= 37 && mouse_x <= 37 + 184 && mouse_y
-   >= 30 && mouse_y <= 30 + 56 then StartingPage else Game else Game *)
 
 let rec check_foldable_row t =
   (* Given a list of blocks, checks to see if there are any consecutive equal
@@ -177,14 +172,12 @@ let rec game_logic current_time delta_time =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
-
-  check_new_game_button_click ();
-
-  if !score > !high_score then high_score := !score
-  else high_score := !high_score;
-  encouragement_text ();
   let next_state =
-    if is_key_pressed Key.Left then handle_move current_time move_left
+    if !score > !high_score then high_score := !score
+    else high_score := !high_score;
+    encouragement_text ();
+    if check_home_page_button_click then StartingPage
+    else if is_key_pressed Key.Left then handle_move current_time move_left
     else if is_key_pressed Key.Right then handle_move current_time move_right
     else if is_key_pressed Key.Up then handle_move current_time move_up
     else if is_key_pressed Key.Down then handle_move current_time move_down
@@ -234,11 +227,7 @@ let lost_state () =
   begin_drawing ();
   clear_background Color.raywhite;
   lose_state ();
-  let next_state =
-    if is_key_pressed Key.Escape then StartingPage
-    else if is_key_pressed Key.S then Game
-    else Lost
-  in
+  let next_state = if is_key_pressed Key.S then StartingPage else Lost in
   end_drawing ();
   next_state
 
@@ -247,8 +236,7 @@ let won_state () =
   clear_background Color.raywhite;
   win_state ();
   let next_state =
-    if is_key_pressed Key.Escape then StartingPage
-    else if is_key_pressed Key.S then Game
+    if is_key_pressed Key.S then StartingPage
     else if is_key_pressed Key.D then ContinuePlaying
     else Won
   in
@@ -295,11 +283,7 @@ let instructions_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
   Instructions.instructions ();
-  let next_state =
-    if is_key_pressed Key.Escape then StartingPage
-    else if is_key_pressed Key.S then Game
-    else InstructionsPage
-  in
+  let next_state = if is_key_pressed Key.S then Game else InstructionsPage in
   end_drawing ();
   next_state
 
