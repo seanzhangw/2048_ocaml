@@ -212,43 +212,26 @@ and handle_move current_time dir : game_state =
     last_move_time := current_time;
     let new_board, score_delta = calculate_next !board dir in
 
-    if
-      (* checks if game board is invalid *)
-      count_empty new_board = 0 && check_foldable new_board = false
-    then Lost
-    else if (* checks if the board has 2048 *)
-            find_2048 new_board then (
-      (* && won_alr = false then *)
+    (* Check if the move results in a change in the board *)
+    if not (new_board = !board) then (
+      (* Update the board and score, and generate a new block *)
       let final_board = generate_block new_board in
       score := !score + score_delta;
       board := final_board;
-      Won)
-    else if
-      (* checks if game board is invalid *)
-      count_empty new_board = 0 && check_foldable new_board = false
-    then Lost
-    else if (* checks if the board has 2048 *)
-            find_2048 new_board then (
-      (* && won_alr = false then *)
-      let final_board = generate_block new_board in
-      score := !score + score_delta;
-      board := final_board;
-      Won)
-    else if new_board = !board then (
-      score := !score + score_delta;
-      board := new_board;
-      Game)
-    else
-      let final_board = generate_block new_board in
-      score := !score + score_delta;
-      board := final_board;
-      current_message :=
-        List.nth encouraging_messages
-          (Random.int (List.length encouraging_messages));
-      current_message_pos :=
-        List.nth encouragement_text_pos
-          (Random.int (List.length encouragement_text_pos));
-      Game)
+      (* Check for winning condition *)
+      if find_2048 final_board then Won (* Check for no more possible moves *)
+      else if check_end final_board then Lost
+        (* Continue the game, update message and position *)
+      else (
+        current_message :=
+          List.nth encouraging_messages
+            (Random.int (List.length encouraging_messages));
+        current_message_pos :=
+          List.nth encouragement_text_pos
+            (Random.int (List.length encouragement_text_pos));
+        Game))
+    else if check_end !board then Lost
+    else Game)
   else Game
 
 let lost_state () =
