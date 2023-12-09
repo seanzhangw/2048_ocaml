@@ -66,6 +66,15 @@ let pp_block_matrix matrix =
 let pp_block_matrix_int_pair (matrix, score) =
   Printf.sprintf "(%s, %s)" (pp_block_matrix matrix) (string_of_int score)
 
+(* Function to convert a single tuple (int * int) to a string *)
+let string_of_tuple (a, b) =
+  "(" ^ string_of_int a ^ ", " ^ string_of_int b ^ ")"
+
+(* Function to pretty print the list of (int * int) tuples *)
+let pp_list lst =
+  let string_list = List.map string_of_tuple lst in
+  "[" ^ String.concat "; " string_list ^ "]"
+
 (* test functions *)
 
 (* Test function for the compress funtion *)
@@ -145,6 +154,17 @@ let calculate_next_test expected board dir _ =
     ~msg:
       ("function: calculate_next\ninput1: " ^ pp_block_matrix board
      ^ "\nexpected: " ^ expected_str ^ "\nactual: " ^ actual_str)
+    expected_str actual_str
+
+(* Test function for the find_zeros funtion *)
+let find_zeros_test expected board _ =
+  let expected_str = pp_list expected in
+  let actual_str = pp_list (find_zeros board) in
+  assert_equal
+    ~printer:(fun x -> x)
+    ~msg:
+      ("function: find_zeros\ninput: " ^ pp_block_matrix board ^ "\nexpected: "
+     ^ expected_str ^ "\nactual: " ^ actual_str)
     expected_str actual_str
 
 let single_one_list = [ 1 ]
@@ -551,10 +571,83 @@ let calculate_next_tests =
           move_left;
   ]
 
+let find_zeros_zero_matrix_output =
+  [
+    (0, 3);
+    (0, 2);
+    (0, 1);
+    (0, 0);
+    (1, 3);
+    (1, 2);
+    (1, 1);
+    (1, 0);
+    (2, 3);
+    (2, 2);
+    (2, 1);
+    (2, 0);
+    (3, 3);
+    (3, 2);
+    (3, 1);
+    (3, 0);
+  ]
+
+let find_zeros_no_zero_matrix_output = []
+let empty_matrix = [ [] ]
+let zero_corner_matrix = [ [ 0; 1; 0 ]; [ 1; 1; 1 ]; [ 0; 1; 0 ] ]
+let zero_corner_matrix_output = [ (0, 2); (0, 0); (2, 2); (2, 0) ]
+let zero_middle_matrix = [ [ 1; 1; 1 ]; [ 1; 0; 1 ]; [ 1; 1; 1 ] ]
+let zero_middle_matrix_output = [ (1, 1) ]
+
+let random_zero_matrix =
+  [ [ 0; 1; 1; 0 ]; [ 1; 0; 1; 1 ]; [ 1; 1; 0; 1 ]; [ 0; 1; 1; 0 ] ]
+
+let random_zero_matrix_output =
+  [ (0, 3); (0, 0); (1, 1); (2, 2); (3, 3); (3, 0) ]
+
+let find_zeros_single_row = [ [ 1; 0; 1 ] ]
+let find_zeros_single_row_output = [ (0, 1) ]
+let find_zeros_single_column = [ [ 1 ]; [ 0 ]; [ 1 ] ]
+let find_zeros_single_column_output = [ (1, 0) ]
+let find_zeros_standard = [ [ 1; 0; 3 ]; [ 4; 5; 0 ]; [ 7; 8; 9 ] ]
+let find_zeros_standard_output = [ (0, 1); (1, 2) ]
+
+(* test cases testing the find_zeros function *)
+
+let find_zeros_tests =
+  [
+    "Testing find_zeros on zero matrix"
+    >:: find_zeros_test find_zeros_zero_matrix_output
+          (to_block_matrix zero_matrix);
+    "Testing find_zeros on matrix with no zeros"
+    >:: find_zeros_test find_zeros_no_zero_matrix_output
+          (to_block_matrix no_movement_matrix);
+    "Testing find_zeros on empty matrix"
+    >:: find_zeros_test find_zeros_no_zero_matrix_output
+          (to_block_matrix empty_matrix);
+    "Testing find_zeros on zero corner matrix"
+    >:: find_zeros_test zero_corner_matrix_output
+          (to_block_matrix zero_corner_matrix);
+    "Testing find_zeros on zero middle matrix"
+    >:: find_zeros_test zero_middle_matrix_output
+          (to_block_matrix zero_middle_matrix);
+    "Testing find_zeros on zero middle matrix"
+    >:: find_zeros_test random_zero_matrix_output
+          (to_block_matrix random_zero_matrix);
+    "Testing find_zeros on single row matrix"
+    >:: find_zeros_test find_zeros_single_row_output
+          (to_block_matrix find_zeros_single_row);
+    "Testing find_zeros on single column matrix"
+    >:: find_zeros_test find_zeros_single_column_output
+          (to_block_matrix find_zeros_single_column);
+    "Testing find_zeros on single column matrix"
+    >:: find_zeros_test find_zeros_standard_output
+          (to_block_matrix find_zeros_standard);
+  ]
+
 let tests =
   "test suite"
   >::: compress_tests @ merge_tests @ move_tests @ transpose_tests
-       @ calculate_next_tests
+       @ calculate_next_tests @ find_zeros_tests
 
 (* let tests = compress_tests *)
 let _ = run_test_tt_main tests

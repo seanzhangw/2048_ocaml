@@ -27,6 +27,9 @@ let hs_label_size = 15
 let hs_pos_x = 450
 let hs_pos_y = 57
 let hs_size = 47
+let encouragement_text_pos_x = 60
+let encouragement_text_pos_y = 100
+let encouragement_text_size = 50
 
 let color_mapping = function
   | 2 -> Raylib.Color.skyblue
