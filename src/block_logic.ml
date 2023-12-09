@@ -83,7 +83,8 @@ let d_move (board : int list list) : int list list * int =
    parameter. The board is expected as an int list list and the function returns
    the new board. ex. calculate_next [[2; 2; 0; 0]; [0; 0; 0; 0]; [4; 4; 8; 0];
    [0; 0; 2; 0]] move_left -> [[4; 0; 0; 0]; [0; 0; 0; 0]; [8; 8; 0; 0]; [2; 0;
-   0; 0]]*)
+   0; 0]] Returns the new board after the shift is made, along with new change 
+  in the score. (ex. if the score goes from 16 to 20, 4 is returned.) *)
 let calculate_next (board : int list list) (dir : int) : int list list * int =
   match dir with
   | dir when dir = move_left ->
@@ -99,6 +100,7 @@ let calculate_next (board : int list list) (dir : int) : int list list * int =
       let moved_board, scores = d_move board in
       (moved_board, scores)
   | _ -> failwith "Invalid direction"
+  (* *)
 
 (*****************************************************************************)
 (* Random block generation *)
@@ -121,7 +123,7 @@ let count_empty (lst : (int * int list) list) : int =
       acc + List.length (List.filter (fun x -> x >= 0) int_list))
     0 lst
 
-let generate_block board =
+(* let generate_block board =
   let mag = random_mag () in
   let zero_lst = find_zeros board in
   let loc = Random.int (count_empty zero_lst) in
@@ -142,4 +144,30 @@ let generate_block board =
       if i = target_row then
         List.mapi (fun j cell -> if j = target_col then mag else cell) row
       else row)
-    board
+    board *)
+
+    let generate_block board =
+      let mag = random_mag () in
+      let zero_lst = find_zeros board in
+      if (count_empty zero_lst) <> 0 then
+      let loc = Random.int (count_empty zero_lst) in
+    
+      let rec find_nth_empty n lst =
+        match lst with
+        | [] -> failwith "Error: Empty list"
+        | (row, cols) :: t ->
+            let valid_cols = List.filter (fun x -> x >= 0) cols in
+            if n < List.length valid_cols then (row, List.nth valid_cols n)
+            else find_nth_empty (n - List.length valid_cols) t
+      in
+    
+      let target_row, target_col = find_nth_empty loc zero_lst in
+    
+      List.mapi
+        (fun i row ->
+          if i = target_row then
+            List.mapi (fun j cell -> if j = target_col then mag else cell) row
+          else row)
+        board
+    else 
+          board
