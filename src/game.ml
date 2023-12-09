@@ -116,7 +116,7 @@ let encouraging_messages =
   ]
 
 let encouragement_text () =
-  Raylib.draw_text !current_message encouragement_text_pos_x
+  Raylib.draw_text !current_message Constants.encouragement_text_pos_x
     encouragement_text_pos_y encouragement_text_size Color.brown
 
 (** Handles the game logic, checking for key input, button clicks, and updating

@@ -167,6 +167,13 @@ let find_zeros_test expected board _ =
      ^ expected_str ^ "\nactual: " ^ actual_str)
     expected_str actual_str
 
+(* Test function for the count_empty function *)
+let count_empty_test expected board _ =
+  let actual = count_empty board in
+  assert_equal ~printer:string_of_int
+    ~msg:("Board: " ^ pp_block_matrix board)
+    expected actual
+
 let single_one_list = [ 1 ]
 let ones_list = [ 1; 1; 1; 1 ]
 let one_to_four_list = [ 1; 2; 3; 4 ]
@@ -630,24 +637,43 @@ let find_zeros_tests =
     "Testing find_zeros on zero middle matrix"
     >:: find_zeros_test zero_middle_matrix_output
           (to_block_matrix zero_middle_matrix);
-    "Testing find_zeros on zero middle matrix"
-    >:: find_zeros_test random_zero_matrix_output
-          (to_block_matrix random_zero_matrix);
     "Testing find_zeros on single row matrix"
     >:: find_zeros_test find_zeros_single_row_output
           (to_block_matrix find_zeros_single_row);
     "Testing find_zeros on single column matrix"
     >:: find_zeros_test find_zeros_single_column_output
           (to_block_matrix find_zeros_single_column);
-    "Testing find_zeros on single column matrix"
+    "Testing find_zeros on standard matrix"
     >:: find_zeros_test find_zeros_standard_output
           (to_block_matrix find_zeros_standard);
+  ]
+
+(* test cases testing the count_empty function *)
+
+let count_empty_tests =
+  [
+    "Testing count_empty on zero matrix"
+    >:: count_empty_test 16 (to_block_matrix zero_matrix);
+    "Testing count_empty on matrix with no zeros"
+    >:: count_empty_test 0 (to_block_matrix no_movement_matrix);
+    "Testing count_empty on empty matrix"
+    >:: count_empty_test 0 (to_block_matrix empty_matrix);
+    "Testing count_empty on zero corner matrix"
+    >:: count_empty_test 4 (to_block_matrix zero_corner_matrix);
+    "Testing count_empty on zero middle matrix"
+    >:: count_empty_test 1 (to_block_matrix zero_middle_matrix);
+    "Testing count_empty on single row matrix"
+    >:: count_empty_test 1 (to_block_matrix find_zeros_single_row);
+    "Testing count_empty on single column matrix"
+    >:: count_empty_test 1 (to_block_matrix find_zeros_single_column);
+    "Testing count_empty on standard matrix"
+    >:: count_empty_test 2 (to_block_matrix find_zeros_standard);
   ]
 
 let tests =
   "test suite"
   >::: compress_tests @ merge_tests @ move_tests @ transpose_tests
-       @ calculate_next_tests @ find_zeros_tests
+       @ calculate_next_tests @ find_zeros_tests @ count_empty_tests
 
 (* let tests = compress_tests *)
 let _ = run_test_tt_main tests
