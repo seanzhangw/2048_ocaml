@@ -127,46 +127,6 @@ let encouragement_text () =
 
 let reset_current_message () = current_message := ""
 
-let rec check_foldable_row t =
-  (* Given a list of blocks, checks to see if there are any consecutive equal
-     pairs of values. Returns false if there are none, and true if some
-     exist. *)
-  match t with
-  | [] -> false
-  | h :: [] -> false
-  | a :: (b :: _ as t) ->
-      Block.get_value a = Block.get_value b || check_foldable_row t
-
-let rec check_row_foldable s =
-  (* Given a board, checks to see if it can be moved left or right. Returns true
-     if it is able to; returns false if otherwise. *)
-  match s with
-  | [] -> false
-  | h :: [] -> check_foldable_row h
-  | h :: (t :: _ as x) ->
-      if check_foldable_row h then true else check_row_foldable x
-
-let check_col_foldable matrix =
-  (* Given a board, checks to see if it can be moved up or down. Returns true if
-     it is able to; returns false if otherwise. *)
-  let transpose matrix =
-    let rec transposer x y =
-      match y with
-      | [] | [] :: _ -> List.rev x
-      | _ ->
-          let new_row = List.map List.hd y in
-          let y = List.map List.tl y in
-          transposer (new_row :: x) y
-    in
-    transposer [] matrix
-  in
-  check_row_foldable (transpose matrix)
-
-let check_foldable matrix =
-  (* Given a board, checks to see if any further moves on it can be made.
-     Returns true if so and returns false otherwise. *)
-  check_row_foldable matrix && check_col_foldable matrix
-
 let find_2048 (board : block list list) : bool =
   (* Given a board, sees if any of the elements of the board are 2048. Returns
      true or false*)
@@ -178,15 +138,13 @@ let rec game_logic current_time delta_time =
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
-
   check_new_game_button_click ();
 
   if !score > !high_score then high_score := !score
   else high_score := !high_score;
   encouragement_text ();
   let next_state =
-    if check_home_page_button_click () then StartingPage
-    else if is_key_pressed Key.Left then handle_move current_time move_left
+    if is_key_pressed Key.Left then handle_move current_time move_left
     else if is_key_pressed Key.Right then handle_move current_time move_right
     else if is_key_pressed Key.Up then handle_move current_time move_up
     else if is_key_pressed Key.Down then handle_move current_time move_down
@@ -212,43 +170,26 @@ and handle_move current_time dir : game_state =
     last_move_time := current_time;
     let new_board, score_delta = calculate_next !board dir in
 
-    if
-      (* checks if game board is invalid *)
-      count_empty new_board = 0 && check_foldable new_board = false
-    then Lost
-    else if (* checks if the board has 2048 *)
-            find_2048 new_board then (
-      (* && won_alr = false then *)
+    (* Check if the move results in a change in the board *)
+    if not (new_board = !board) then (
+      (* Update the board and score, and generate a new block *)
       let final_board = generate_block new_board in
       score := !score + score_delta;
       board := final_board;
-      Won)
-    else if
-      (* checks if game board is invalid *)
-      count_empty new_board = 0 && check_foldable new_board = false
-    then Lost
-    else if (* checks if the board has 2048 *)
-            find_2048 new_board then (
-      (* && won_alr = false then *)
-      let final_board = generate_block new_board in
-      score := !score + score_delta;
-      board := final_board;
-      Won)
-    else if new_board = !board then (
-      score := !score + score_delta;
-      board := new_board;
-      Game)
-    else
-      let final_board = generate_block new_board in
-      score := !score + score_delta;
-      board := final_board;
-      current_message :=
-        List.nth encouraging_messages
-          (Random.int (List.length encouraging_messages));
-      current_message_pos :=
-        List.nth encouragement_text_pos
-          (Random.int (List.length encouragement_text_pos));
-      Game)
+      (* Check for winning condition *)
+      if find_2048 final_board then Won (* Check for no more possible moves *)
+      else if check_end final_board then Lost
+        (* Continue the game, update message and position *)
+      else (
+        current_message :=
+          List.nth encouraging_messages
+            (Random.int (List.length encouraging_messages));
+        current_message_pos :=
+          List.nth encouragement_text_pos
+            (Random.int (List.length encouragement_text_pos));
+        Game))
+    else if check_end !board then Lost
+    else Game)
   else Game
 
 let lost_state () =
@@ -269,9 +210,7 @@ let won_state () =
   clear_background Color.raywhite;
   win_state ();
   let next_state =
-    if is_key_pressed Key.S then (
-      reset ();
-      StartingPage)
+    if is_key_pressed Key.S then StartingPage
     else if is_key_pressed Key.D then ContinuePlaying
     else Won
   in
@@ -286,15 +225,9 @@ let continue_playing_state () =
 
   let handle_move dir =
     let new_board, score_delta = calculate_next !board dir in
-
-    if
-      (* checks if game board is invalid *)
-      count_empty new_board = 0 && check_foldable new_board = false
-    then Lost
-    else
-      let final_board = generate_block new_board in
-      board := final_board;
-      ContinuePlaying
+    let final_board = generate_block new_board in
+    board := final_board;
+    ContinuePlaying
   in
 
   let next_state =
@@ -318,7 +251,11 @@ let instructions_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
   Instructions.instructions ();
-  let next_state = if is_key_pressed Key.S then Game else InstructionsPage in
+  let next_state =
+    if is_key_pressed Key.Escape then StartingPage
+    else if is_key_pressed Key.S then Game
+    else InstructionsPage
+  in
   end_drawing ();
   next_state
 

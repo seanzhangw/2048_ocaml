@@ -86,7 +86,9 @@ val count_empty : block list list -> int
 val generate_block : block list list -> block list list
 (** Generates a random block within the board in a random location with a
     magnitude of either 4 or 2*)
-
+val check_end : block list list -> bool 
+(** Checks if the board has any valid moves left *)
+    
 val generate_initial : unit -> block list list
 (** Generate an initial board that has two blocks (either 4 or 2) in a random
     location on the board*)

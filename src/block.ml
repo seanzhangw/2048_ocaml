@@ -36,6 +36,14 @@ module Block = struct
   let get_state (block : block) = block.state
   let set_state (block : block) (state : block_state) = block.state <- state
 
+  let copy_block (block : block) =
+    {
+      value = block.value;
+      current_pos = block.current_pos;
+      target_pos = block.target_pos;
+      state = block.state;
+    }
+
   let place_block (value : int) (pos : int * int) : block =
     {
       value;
