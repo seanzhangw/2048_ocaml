@@ -90,6 +90,14 @@ val encouragement_text_size : int
 val color_mapping : int -> Raylib.Color.t
 (** [color_mapping] is a function that maps an integer (block value) to a color. *)
 
+val encouraging_messages : string list
+(** [encouraging_messages] is a list of possible messages displayed to the
+    player. *)
+
+val encouragement_text_pos : (int * int) list
+(** [encouragment_text_pos] is a list of possible coordinates of the encouraging
+    messages. *)
+
 val move_left : int
 (** [move_left] is the key code for moving left. *)
 

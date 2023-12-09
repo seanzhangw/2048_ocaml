@@ -25,23 +25,17 @@ let board = ref (generate_initial ())
 let current_message = ref ""
 let current_message_pos = ref (60, 100)
 
-(** Resets the game state, including score, board, and writes the high score to
-    a file. *)
 let reset () =
   score := 0;
   board := generate_initial ();
   Utils.write_to_file Constants.file_path (string_of_int !high_score)
 
-(** Initializes the Raylib window with the specified size and frame rate. *)
 let setup () =
   init_window screen_width screen_height "raylib [core] example - basic window";
   set_target_fps fps
 
-(** Placeholder initialization for the game board. *)
 let init_board () = Array.make_matrix 5 4 0
 
-(** Handles the logic for the starting page, checking for key input to progress
-    to instructions or the game state. *)
 let starting_page_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -52,7 +46,6 @@ let starting_page_logic () =
   end_drawing ();
   next_state
 
-(** Checks for the home page button click and resets the board if clicked. *)
 let check_home_page_button_click () =
   if Raylib.is_mouse_button_pressed MouseButton.Left then
     let mouse_x = Raylib.get_mouse_x () in
@@ -68,7 +61,6 @@ let check_home_page_button_click () =
     else false
   else false
 
-(** Handles the button click logic for the new game button. *)
 let check_new_game_button_click () =
   if Raylib.is_mouse_button_pressed MouseButton.Left then (
     let mouse_x = Raylib.get_mouse_x () in
@@ -82,7 +74,6 @@ let check_new_game_button_click () =
     score := 0;
     Utils.write_to_file Constants.file_path (string_of_int !high_score))
 
-(** Animates the game board based on the elapsed time. *)
 let animate delta_time =
   List.iter
     (fun row ->
@@ -91,54 +82,17 @@ let animate delta_time =
 
   display_tiles_input !board
 
-let encouraging_messages =
-  [
-    "Great move!";
-    "Keep it up!";
-    "Nice one!";
-    "Awesome!";
-    "Fantastic!";
-    "Superb effort!";
-    "Superb!";
-    "Great!";
-    "Slay!";
-    "You're on fire!";
-    "Incredible skill!";
-    "Way to go!";
-    "You're a natural!";
-    "Brilliant!";
-    "Wonderful!";
-    "Exceptional!";
-    "You're a genius!";
-    "Unstoppable!";
-    "Amazing!";
-    "Masterful play!";
-    "Superstar!";
-    "Phenomenal!";
-    "Setting records!";
-    "You're a champ!";
-    "Spectacular!";
-  ]
-
-(** Animates the game board based on the elapsed time. *)
-let encouragement_text_pos =
-  [ (60, 100); (100, 110); (350, 100); (60, 550); (100, 550); (350, 550) ]
-
-(** Draws encouraging messages on the screen. *)
 let encouragement_text () =
   Raylib.draw_text !current_message (fst !current_message_pos)
     (snd !current_message_pos) encouragement_text_size Color.brown
 
-(** Resets the current encouragement message. *)
 let reset_current_message () = current_message := ""
 
-(** Given a board, checks if any of the elements of the board are 2048. *)
 let find_2048 (board : block list list) : bool =
   List.exists
     (fun row -> List.exists (fun block -> get_value block = 2048) row)
     board
 
-(** Handles the game logic, including player input and updating the game state. *)
 let rec game_logic current_time delta_time =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -175,16 +129,12 @@ and handle_move current_time dir : game_state =
     last_move_time := current_time;
     let new_board, score_delta = calculate_next !board dir in
 
-    (* Check if the move results in a change in the board *)
     if not (new_board = !board) then (
-      (* Update the board and score, and generate a new block *)
       let final_board = generate_block new_board in
       score := !score + score_delta;
       board := final_board;
-      (* Check for winning condition *)
-      if find_2048 final_board then Won (* Check for no more possible moves *)
+      if find_2048 final_board then Won
       else if check_end final_board then Lost
-        (* Continue the game, update message and position *)
       else (
         current_message :=
           List.nth encouraging_messages
@@ -197,7 +147,6 @@ and handle_move current_time dir : game_state =
     else Game)
   else Game
 
-(** Handles the logic for the game over (lost) state. *)
 let lost_state () =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -211,7 +160,6 @@ let lost_state () =
   end_drawing ();
   next_state
 
-(** Handles the logic for the game won state. *)
 let won_state () =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -224,7 +172,6 @@ let won_state () =
   end_drawing ();
   next_state
 
-(** Handles the logic for the "Continue Playing" state. *)
 let continue_playing_state () =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -253,8 +200,6 @@ let continue_playing_state () =
   end_drawing ();
   next_state
 
-(* Draws and implements the logic for the instruction page. Continuously checks
-   for key input to begin the game *)
 let instructions_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
@@ -263,8 +208,6 @@ let instructions_logic () =
   end_drawing ();
   next_state
 
-(* Main control loop of the game. Depending on the state of the game, a
-   different logic block is executed *)
 let rec main_loop last_time state =
   let open Unix in
   let current_time = gettimeofday () in

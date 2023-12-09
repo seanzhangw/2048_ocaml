@@ -1,6 +1,5 @@
 open Unix
 
-(* Function to create a directory *)
 let create_directory dir_name =
   try mkdir dir_name 0o755 with
   | Unix_error (EEXIST, _, _) -> ()

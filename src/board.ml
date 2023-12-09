@@ -4,7 +4,6 @@ open Block
 
 type block = Block.block
 
-(* Draws the initial grid for the game board *)
 let draw_init_grid () =
   let extended_square_size = square_size + spacing in
   let grid_size = num_squares * extended_square_size in
@@ -16,7 +15,6 @@ let draw_init_grid () =
       let x = grid_x + (i * extended_square_size) in
       let y = grid_y + (j * extended_square_size) in
 
-      (* Draw the larger background square in dark gray *)
       Raylib.draw_rectangle (x - spacing) (y - spacing)
         (extended_square_size + spacing)
         (extended_square_size + spacing)
@@ -28,14 +26,11 @@ let draw_init_grid () =
     for j = 0 to num_squares - 1 do
       let x = grid_x + (i * extended_square_size) in
       let y = grid_y + (j * extended_square_size) in
-
-      (* Draw the smaller square with black lines *)
       Raylib.draw_rectangle x y square_size square_size Raylib.Color.beige
     done
   done;
   ()
 
-(* Draws the home page button with the game title *)
 let draw_home_page_button () =
   let mouse_x = Raylib.get_mouse_x () in
   let mouse_y = Raylib.get_mouse_y () in
@@ -53,7 +48,6 @@ let draw_home_page_button () =
     Color.raywhite;
   Raylib.draw_text "2048" home_pos_x home_pos_y home_text_size button_text
 
-(* Draws the new game button with hover effects *)
 let draw_new_game_button () =
   let mouse_x = Raylib.get_mouse_x () in
   let mouse_y = Raylib.get_mouse_y () in
@@ -73,7 +67,6 @@ let draw_new_game_button () =
   Raylib.draw_text "New Game" (new_pos_x + 26) (new_pos_y + 20) new_text_size
     button_text
 
-(* Draws a single block on the game board with its numeric value *)
 let draw_block (block : block) (size : int) =
   let x, y = block.current_pos in
   let x = int_of_float x in
@@ -88,7 +81,6 @@ let draw_block (block : block) (size : int) =
       (y + (square_size / 2) - 15)
       30 Raylib.Color.white
 
-(** Displays the current board data onto the board *)
 let rec display_tiles_input (tiles : block list list) =
   let render_movement block = draw_block block square_size in
   let render_emerge block progress =
@@ -108,7 +100,6 @@ let rec display_tiles_input (tiles : block list list) =
         row)
     tiles
 
-(* Draws the main content of the game page, including title and buttons *)
 let game_page () =
   draw_text "2048" 37 30 80 Color.brown;
   draw_home_page_button ();

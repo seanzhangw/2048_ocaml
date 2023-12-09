@@ -2,7 +2,6 @@ open Constants
 open Block
 open Random
 
-(* Block movement *)
 type block = Block.block
 
 let rec compress = function
@@ -144,11 +143,6 @@ let d_move (board : block list list) : block list list * int =
   correct_pos_state_vertical final_board;
   (final_board, List.fold_left ( + ) 0 scores)
 
-(* Shifts the 4x4 board left, right, up, or down depending on the input
-   parameter. The board is expected as an int list list and the function returns
-   the new board. ex. calculate_next [[2; 2; 0; 0]; [0; 0; 0; 0]; [4; 4; 8; 0];
-   [0; 0; 2; 0]] move_left -> [[4; 0; 0; 0]; [0; 0; 0; 0]; [8; 8; 0; 0]; [2; 0;
-   0; 0]]*)
 let calculate_next (board : block list list) (dir : int) : block list list * int
     =
   match dir with
@@ -166,7 +160,6 @@ let calculate_next (board : block list list) (dir : int) : block list list * int
       (moved_board, scores)
   | _ -> failwith "Invalid direction"
 
-(* Random block generation *)
 let random_mag () =
   let rand = Random.int 10 in
   match rand with

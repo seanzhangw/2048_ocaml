@@ -43,6 +43,38 @@ let color_mapping = function
   | 2048 -> Raylib.Color.red
   | _ -> Raylib.Color.beige
 
+let encouraging_messages =
+  [
+    "Great move!";
+    "Keep it up!";
+    "Nice one!";
+    "Awesome!";
+    "Fantastic!";
+    "Superb effort!";
+    "Superb!";
+    "Great!";
+    "Slay!";
+    "You're on fire!";
+    "Incredible skill!";
+    "Way to go!";
+    "You're a natural!";
+    "Brilliant!";
+    "Wonderful!";
+    "Exceptional!";
+    "You're a genius!";
+    "Unstoppable!";
+    "Amazing!";
+    "Masterful play!";
+    "Superstar!";
+    "Phenomenal!";
+    "Setting records!";
+    "You're a champ!";
+    "Spectacular!";
+  ]
+
+let encouragement_text_pos =
+  [ (60, 100); (100, 110); (350, 100); (60, 550); (100, 550); (350, 550) ]
+
 (* Control constants *)
 let move_left = 0
 let move_right = 1

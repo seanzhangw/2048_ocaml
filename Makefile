@@ -31,6 +31,7 @@ finalcheck:
 
 doc:
 	dune build @doc
+	@bash opendoc.sh
 
 opendoc: doc
 	@bash opendoc.sh
