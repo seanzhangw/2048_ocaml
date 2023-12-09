@@ -31,12 +31,9 @@ val starting_page_logic : unit -> game_state
 (** Handles the logic for the starting page, checking for key input to progress
     to instructions or the game state. Returns the next game state. *)
 
-val check_home_page_button_click : game_state -> game_state
+val check_home_page_button_click : unit -> bool
 (** Checks for the home page button click and resets the board if clicked.
     Returns the next game state. *)
-
-val check_new_game_button_click : unit -> unit
-(** Handles the button click logic for the new game button. *)
 
 val animate : float -> unit
 (** Animates the game board based on the elapsed time. *)
