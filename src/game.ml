@@ -223,6 +223,21 @@ and handle_move current_time dir : game_state =
       score := !score + score_delta;
       board := final_board;
       Won)
+    else if
+      (* checks if game board is invalid *)
+      count_empty new_board = 0 && check_foldable new_board = false
+    then Lost
+    else if (* checks if the board has 2048 *)
+            find_2048 new_board then (
+      (* && won_alr = false then *)
+      let final_board = generate_block new_board in
+      score := !score + score_delta;
+      board := final_board;
+      Won)
+    else if new_board = !board then (
+      score := !score + score_delta;
+      board := new_board;
+      Game)
     else
       let final_board = generate_block new_board in
       score := !score + score_delta;
