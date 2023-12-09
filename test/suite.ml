@@ -275,6 +275,9 @@ let l_merge_leading_zeros_input = [ 0; 0; 2; 2 ]
 let l_merge_leading_zeros_output = [ 0; 4 ]
 let r_merge_leading_zeros_input = [ 2; 2; 0; 0 ]
 let r_merge_leading_zeros_output = [ 4; 0 ]
+let merge_with_zero_between = [ 2; 0; 2; 4 ]
+let l_merge_with_zero_between_output = [ 2; 0; 2; 4 ]
+let r_merge_with_zero_between_output = [ 2; 0; 2; 4 ]
 
 (* Test cases testing the merge functions *)
 let merge_tests =
@@ -324,9 +327,17 @@ let merge_tests =
           (to_block_list l_merge_leading_zeros_output, 4)
           (to_block_list l_merge_leading_zeros_input);
     "Merge with leading zeros in right merge"
-    >:: l_merge_test
+    >:: r_merge_test
           (to_block_list r_merge_leading_zeros_output, 4)
           (to_block_list r_merge_leading_zeros_input);
+    "Merge with leading zeros in left merge"
+    >:: l_merge_test
+          (to_block_list l_merge_with_zero_between_output, 0)
+          (to_block_list merge_with_zero_between);
+    "Merge with leading zeros in right merge"
+    >:: r_merge_test
+          (to_block_list r_merge_with_zero_between_output, 0)
+          (to_block_list merge_with_zero_between);
   ]
 
 let left_move_input = [ 2; 2; 0; 2 ]
@@ -372,6 +383,24 @@ let standard_matrix_d =
 
 let no_merge_matrix =
   [ [ 1; 2; 3; 4 ]; [ 4; 3; 2; 1 ]; [ 1; 2; 3; 4 ]; [ 4; 3; 2; 1 ] ]
+
+let vertical_merge_matrix =
+  [ [ 2; 0; 2; 2 ]; [ 2; 2; 2; 0 ]; [ 0; 2; 0; 2 ]; [ 0; 0; 0; 0 ] ]
+
+let u_move_vertical_merge_output =
+  [ [ 4; 4; 4; 4 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let d_move_vertical_merge_output =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 4; 4; 4; 4 ] ]
+
+let sparce_matrix =
+  [ [ 0; 2; 0; 0 ]; [ 2; 0; 4; 0 ]; [ 0; 0; 0; 4 ]; [ 0; 0; 0; 0 ] ]
+
+let u_move_sparce_output =
+  [ [ 2; 2; 4; 4 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let d_move_sparce_output =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 2; 2; 4; 4 ] ]
 
 (* Test cases testing the move functions *)
 let move_tests =
@@ -462,6 +491,22 @@ let move_tests =
     >:: d_move_test
           (to_block_matrix no_merge_matrix, 0)
           (to_block_matrix no_merge_matrix);
+    "Testing up move with vertical merge matrix"
+    >:: u_move_test
+          (to_block_matrix u_move_vertical_merge_output, 16)
+          (to_block_matrix vertical_merge_matrix);
+    "Testing down move with vertical merge matrix"
+    >:: d_move_test
+          (to_block_matrix d_move_vertical_merge_output, 16)
+          (to_block_matrix vertical_merge_matrix);
+    "Testing up move with sparce matrix"
+    >:: u_move_test
+          (to_block_matrix u_move_sparce_output, 0)
+          (to_block_matrix sparce_matrix);
+    "Testing down move with sparce matrix"
+    >:: d_move_test
+          (to_block_matrix d_move_sparce_output, 0)
+          (to_block_matrix sparce_matrix);
   ]
 
 let matrix1 =
@@ -567,6 +612,36 @@ let alternate_values_matrix_d =
 let no_movement_matrix =
   [ [ 2; 4; 8; 16 ]; [ 16; 8; 4; 2 ]; [ 2; 4; 8; 16 ]; [ 16; 8; 4; 2 ] ]
 
+let start_game =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 2; 0 ] ]
+
+let l_start_game =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 2; 0; 0; 0 ] ]
+
+let r_start_game =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 2 ] ]
+
+let u_start_game =
+  [ [ 0; 0; 2; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let d_start_game =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 2; 0 ] ]
+
+let win_game =
+  [ [ 1024; 1024; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let l_win_game =
+  [ [ 2048; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let r_win_game =
+  [ [ 0; 0; 0; 2048 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let u_win_game =
+  [ [ 1024; 1024; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let d_win_game =
+  [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 1024; 1024; 0; 0 ] ]
+
 (* test cases testing the calculate_next function *)
 let calculate_next_tests =
   [
@@ -640,6 +715,42 @@ let calculate_next_tests =
           (to_block_matrix no_movement_matrix, 0)
           (to_block_matrix no_movement_matrix)
           move_left;
+    "Testing calculate next on matrix that resembles a starting game"
+    >:: calculate_next_test
+          (to_block_matrix l_start_game, 0)
+          (to_block_matrix start_game)
+          move_left;
+    "Testing calculate next on matrix that resembles a starting game"
+    >:: calculate_next_test
+          (to_block_matrix r_start_game, 0)
+          (to_block_matrix start_game)
+          move_right;
+    "Testing calculate next on matrix that resembles a starting game"
+    >:: calculate_next_test
+          (to_block_matrix u_start_game, 0)
+          (to_block_matrix start_game)
+          move_up;
+    "Testing calculate next on matrix that resembles a starting game"
+    >:: calculate_next_test
+          (to_block_matrix d_start_game, 0)
+          (to_block_matrix start_game)
+          move_down;
+    "Testing calculate next on matrix that resembles an ending game"
+    >:: calculate_next_test
+          (to_block_matrix l_win_game, 2048)
+          (to_block_matrix win_game) move_left;
+    "Testing calculate next on matrix that resembles an ending game"
+    >:: calculate_next_test
+          (to_block_matrix r_win_game, 2048)
+          (to_block_matrix win_game) move_right;
+    "Testing calculate next on matrix that resembles an ending game"
+    >:: calculate_next_test
+          (to_block_matrix u_win_game, 0)
+          (to_block_matrix win_game) move_up;
+    "Testing calculate next on matrix that resembles an ending game"
+    >:: calculate_next_test
+          (to_block_matrix d_win_game, 0)
+          (to_block_matrix win_game) move_down;
   ]
 
 let find_zeros_zero_matrix_output =
