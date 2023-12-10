@@ -84,8 +84,9 @@ val hs_pos_y : int
 val hs_size : int
 (** [hs_size] is the font size of the high score display. *)
 
-val encouragement_text_size : int
-(** [encouragement_text_size] is the font size of the encouragement test. *)
+val encouragement_text_size : int list
+(** [encouragement_text_size] is a list of possible font sizes of the
+    encouragement text. *)
 
 val color_mapping : int -> Raylib.Color.t
 (** [color_mapping] is a function that maps an integer (block value) to a color. *)
