@@ -103,6 +103,15 @@ module Block = struct
         end
     | Blank -> ()
 
+  let equal (old_board : block list list) (new_board : block list list) =
+    let blocks_equal b1 b2 = b1.value = b2.value in
+    let rows_equal row1 row2 =
+      try List.for_all2 blocks_equal row1 row2
+      with Invalid_argument _ -> false
+    in
+    try List.for_all2 rows_equal old_board new_board
+    with Invalid_argument _ -> false
+
   let empty_board =
     [
       [
