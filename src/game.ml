@@ -22,36 +22,6 @@ let score = ref 0
 let high_score = ref 0
 let last_move_time = ref 0.
 let board = ref (generate_initial ())
-
-let board =
-  ref
-    [
-      [
-        place_block 1024 (0, 0);
-        place_block 1024 (1, 0);
-        place_block 0 (2, 0);
-        place_block 0 (3, 0);
-      ];
-      [
-        place_block 0 (0, 1);
-        place_block 0 (1, 1);
-        place_block 0 (2, 1);
-        place_block 0 (3, 1);
-      ];
-      [
-        place_block 0 (0, 2);
-        place_block 0 (1, 2);
-        place_block 0 (2, 2);
-        place_block 0 (3, 2);
-      ];
-      [
-        place_block 0 (0, 3);
-        place_block 0 (1, 3);
-        place_block 0 (2, 3);
-        place_block 0 (3, 3);
-      ];
-    ]
-
 let current_message = ref ""
 let current_message_pos = ref (60, 100)
 
