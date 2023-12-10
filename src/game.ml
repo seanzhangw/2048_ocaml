@@ -168,7 +168,9 @@ and handle_move current_time dir : game_state =
       let final_board = generate_block new_board in
       score := !score + score_delta;
       board := final_board;
-      if find_2048 final_board then Won
+      if find_2048 final_board then (
+        high_score := !score;
+        Won)
       else if check_end final_board then Lost
       else (
         current_message :=
