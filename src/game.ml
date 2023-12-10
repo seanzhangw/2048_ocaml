@@ -75,6 +75,7 @@ let starting_page_logic () =
   begin_drawing ();
   clear_background Color.raywhite;
   starting_page ();
+  high_score := Utils.read_highscore file_path;
   let next_state =
     if is_key_pressed Key.I then InstructionsPage else StartingPage
   in
@@ -159,7 +160,6 @@ let rec game_logic current_time delta_time =
   next_state
 
 and handle_move current_time dir : game_state =
-  print_endline "GAME STATE";
   if current_time -. !last_move_time > Constants.move_cooldown then (
     last_move_time := current_time;
     let new_board, score_delta = calculate_next !board dir in
@@ -213,7 +213,6 @@ let won_state () =
   next_state
 
 let rec continue_playing_state current_time delta_time =
-  print_endline "HERE DUMBASS";
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
