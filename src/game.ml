@@ -213,7 +213,6 @@ let won_state () =
   next_state
 
 let rec continue_playing_state current_time delta_time =
-  print_endline "HERE DUMBASS";
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
