@@ -90,11 +90,7 @@ let animate delta_time =
 
 let encouragement_text () =
   Raylib.draw_text !current_message (fst !current_message_pos)
-    (snd !current_message_pos)
-    (* (List.nth encouragement_text_size (Random.int (List.length
-       encouragement_text_size))) *)
-    !current_message_size
-    Color.brown
+    (snd !current_message_pos) !current_message_size Color.brown
 
 let find_2048 (board : block list list) : bool =
   List.exists
@@ -243,4 +239,3 @@ let rec main_loop last_time state =
     main_loop current_time next_state
 
 let () = setup ()
-(* start the main loop with the StartingPage state *)
