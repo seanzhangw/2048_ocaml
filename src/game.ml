@@ -75,8 +75,9 @@ let check_new_game_button_click () =
       && mouse_x <= new_pos_x + new_width
       && mouse_y >= new_pos_y
       && mouse_y <= new_pos_y + new_height
-    then board := generate_initial ();
-    score := 0;
+    then (
+      board := generate_initial ();
+      score := 0);
     Utils.write_to_file Constants.file_path (string_of_int !high_score))
 
 let animate delta_time =
