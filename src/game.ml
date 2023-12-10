@@ -133,6 +133,7 @@ let rec game_logic current_time delta_time =
   next_state
 
 and handle_move current_time dir : game_state =
+  print_endline "GAME STATE";
   if current_time -. !last_move_time > Constants.move_cooldown then (
     last_move_time := current_time;
     let new_board, score_delta = calculate_next !board dir in
@@ -183,33 +184,62 @@ let won_state () =
   end_drawing ();
   next_state
 
-let continue_playing_state () =
+let rec continue_playing_state current_time delta_time =
+  print_endline "HERE DUMBASS";
   begin_drawing ();
   clear_background Color.raywhite;
   game_page ();
   check_new_game_button_click ();
 
-  let handle_move dir =
-    let new_board, score_delta = calculate_next !board dir in
-    let final_board = generate_block new_board in
-    board := final_board;
-    ContinuePlaying
-  in
-
+  if !score > !high_score then high_score := !score
+  else high_score := !high_score;
+  encouragement_text ();
   let next_state =
-    if is_key_pressed Key.Left then handle_move move_left
-    else if is_key_pressed Key.Right then handle_move move_right
-    else if is_key_pressed Key.Up then handle_move move_up
-    else if is_key_pressed Key.Down then handle_move move_down
+    if is_key_pressed Key.Left then handle_move' current_time move_left
+    else if is_key_pressed Key.Right then handle_move' current_time move_right
+    else if is_key_pressed Key.Up then handle_move' current_time move_up
+    else if is_key_pressed Key.Down then handle_move' current_time move_down
+    else if check_home_page_button_click () then StartingPage
     else ContinuePlaying
   in
+  animate delta_time;
 
   display_tiles_input !board;
-  draw_text "Score: " 550 30 30 Color.brown;
-  draw_text (string_of_int !score) 670 30 30 Color.beige;
+  draw_text "Score " score_label_pos_x score_label_pos_y score_label_size
+    Color.brown;
+  draw_text (string_of_int !score) score_pos_x score_pos_y score_size
+    Color.beige;
+  draw_text "High Score " hs_label_pos_x hs_label_pos_y hs_label_size
+    Color.brown;
+  draw_text (string_of_int !high_score) hs_pos_x hs_pos_y hs_size Color.beige;
 
   end_drawing ();
   next_state
+
+and handle_move' current_time dir : game_state =
+  if current_time -. !last_move_time > Constants.move_cooldown then (
+    last_move_time := current_time;
+    let new_board, score_delta = calculate_next !board dir in
+
+    if not (Block.equal new_board !board) then (
+      let final_board = generate_block new_board in
+      score := !score + score_delta;
+      board := final_board;
+      if check_end final_board then Lost
+      else (
+        current_message :=
+          List.nth encouraging_messages
+            (Random.int (List.length encouraging_messages));
+        current_message_pos :=
+          List.nth encouragement_text_pos
+            (Random.int (List.length encouragement_text_pos));
+        current_message_size :=
+          List.nth encouragement_text_size
+            (Random.int (List.length encouragement_text_size));
+        ContinuePlaying))
+    else if check_end !board then Lost
+    else ContinuePlaying)
+  else ContinuePlaying
 
 let instructions_logic () =
   begin_drawing ();
@@ -232,7 +262,7 @@ let rec main_loop last_time state =
       | InstructionsPage -> instructions_logic ()
       | Lost -> lost_state ()
       | Won -> won_state ()
-      | ContinuePlaying -> continue_playing_state ()
+      | ContinuePlaying -> continue_playing_state current_time delta_time
     in
     let frame_end_time = gettimeofday () in
     let frame_duration = frame_end_time -. current_time in

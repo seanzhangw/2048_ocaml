@@ -66,5 +66,8 @@ val lost_state : unit -> game_state
 val won_state : unit -> game_state
 (** Returns to win state *)
 
-val continue_playing_state : unit -> game_state
+val continue_playing_state : float -> float -> game_state
 (** Returns to continue playing state *)
+
+val handle_move' : float -> int -> game_state
+(** Similar to [handle_move] but does not check for the 2048 tile. *)

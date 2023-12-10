@@ -115,8 +115,8 @@ module Block = struct
   let empty_board =
     [
       [
-        place_block 0 (0, 0);
-        place_block 0 (1, 0);
+        place_block 1024 (0, 0);
+        place_block 1024 (1, 0);
         place_block 0 (2, 0);
         place_block 0 (3, 0);
       ];
