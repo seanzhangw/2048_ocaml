@@ -2,14 +2,15 @@
 
 (** A [Block] represents a 2048 tile. *)
 module Block : sig
-  (** [block_state] represents the current behavior of the block. The block can
-      either be [Stationary], [Moving], [Merging], [Emerging], or [Blank]*)
   type block_state =
     | Stationary
     | Moving of float
     | Merging of float
     | Emerging of float
     | Blank
+        (** [block_state] represents the current behavior of the block. The
+            block can either be [Stationary], [Moving], [Merging], [Emerging],
+            or [Blank]*)
 
   type block = {
     mutable value : int;

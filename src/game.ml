@@ -22,6 +22,36 @@ let score = ref 0
 let high_score = ref 0
 let last_move_time = ref 0.
 let board = ref (generate_initial ())
+
+let board =
+  ref
+    [
+      [
+        place_block 1024 (0, 0);
+        place_block 1024 (1, 0);
+        place_block 0 (2, 0);
+        place_block 0 (3, 0);
+      ];
+      [
+        place_block 0 (0, 1);
+        place_block 0 (1, 1);
+        place_block 0 (2, 1);
+        place_block 0 (3, 1);
+      ];
+      [
+        place_block 0 (0, 2);
+        place_block 0 (1, 2);
+        place_block 0 (2, 2);
+        place_block 0 (3, 2);
+      ];
+      [
+        place_block 0 (0, 3);
+        place_block 0 (1, 3);
+        place_block 0 (2, 3);
+        place_block 0 (3, 3);
+      ];
+    ]
+
 let current_message = ref ""
 let current_message_pos = ref (60, 100)
 
@@ -90,11 +120,7 @@ let animate delta_time =
 
 let encouragement_text () =
   Raylib.draw_text !current_message (fst !current_message_pos)
-    (snd !current_message_pos)
-    (* (List.nth encouragement_text_size (Random.int (List.length
-       encouragement_text_size))) *)
-    !current_message_size
-    Color.brown
+    (snd !current_message_pos) !current_message_size Color.brown
 
 let find_2048 (board : block list list) : bool =
   List.exists
@@ -177,7 +203,9 @@ let won_state () =
   clear_background Color.raywhite;
   win_state ();
   let next_state =
-    if is_key_pressed Key.S then StartingPage
+    if is_key_pressed Key.S then (
+      reset ();
+      StartingPage)
     else if is_key_pressed Key.D then ContinuePlaying
     else Won
   in
@@ -273,4 +301,3 @@ let rec main_loop last_time state =
     main_loop current_time next_state
 
 let () = setup ()
-(* start the main loop with the StartingPage state *)
