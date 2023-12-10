@@ -254,4 +254,5 @@ let generate_initial () =
   let board = set_block board row1 col1 (random_mag ()) in
   let row2, col2 = get_random_empty_position board in
   let board = set_block board row2 col2 (random_mag ()) in
+  correct_pos_state_vertical board;
   board

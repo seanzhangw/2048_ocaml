@@ -81,6 +81,10 @@ module Block : sig
   (** [update_block] steps and keeps track of the animation progress of the
       block. *)
 
+  val equal : block list list -> block list list -> bool
+  (** [equal] compares if the block list list contains the same values in the
+      correct positions. *)
+
   val empty_board : block list list
   (** [empty_board] is the blank board full of blocks with a value of 0. *)
 end

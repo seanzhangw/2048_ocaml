@@ -132,8 +132,8 @@ and handle_move current_time dir : game_state =
   if current_time -. !last_move_time > Constants.move_cooldown then (
     last_move_time := current_time;
     let new_board, score_delta = calculate_next !board dir in
-    (* if the new board is different *)
-    if not (new_board = !board) then (
+
+    if not (Block.equal new_board !board) then (
       let final_board = generate_block new_board in
       score := !score + score_delta;
       board := final_board;
