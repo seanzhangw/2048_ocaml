@@ -25,6 +25,11 @@ let board = ref (generate_initial ())
 let current_message = ref ""
 let current_message_pos = ref (60, 100)
 
+let current_message_size =
+  ref
+    (List.nth encouragement_text_size
+       (Random.int (List.length encouragement_text_size)))
+
 let reset () =
   score := 0;
   board := generate_initial ();
@@ -85,9 +90,11 @@ let animate delta_time =
 
 let encouragement_text () =
   Raylib.draw_text !current_message (fst !current_message_pos)
-    (snd !current_message_pos) encouragement_text_size Color.brown
-
-let reset_current_message () = current_message := ""
+    (snd !current_message_pos)
+    (* (List.nth encouragement_text_size (Random.int (List.length
+       encouragement_text_size))) *)
+    !current_message_size
+    Color.brown
 
 let find_2048 (board : block list list) : bool =
   List.exists
@@ -143,6 +150,9 @@ and handle_move current_time dir : game_state =
         current_message_pos :=
           List.nth encouragement_text_pos
             (Random.int (List.length encouragement_text_pos));
+        current_message_size :=
+          List.nth encouragement_text_size
+            (Random.int (List.length encouragement_text_size));
         Game))
     else if check_end !board then Lost
     else Game)

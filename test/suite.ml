@@ -642,6 +642,12 @@ let u_win_game =
 let d_win_game =
   [ [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 1024; 1024; 0; 0 ] ]
 
+let start_top_game =
+  [ [ 2; 2; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
+let u_start_top_game =
+  [ [ 2; 2; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ]; [ 0; 0; 0; 0 ] ]
+
 (* test cases testing the calculate_next function *)
 let calculate_next_tests =
   [
@@ -751,6 +757,11 @@ let calculate_next_tests =
     >:: calculate_next_test
           (to_block_matrix d_win_game, 0)
           (to_block_matrix win_game) move_down;
+    "Testing calculate next on matrix that resembles an ending game"
+    >:: calculate_next_test
+          (to_block_matrix u_start_game, 0)
+          (to_block_matrix start_game)
+          move_up;
   ]
 
 let find_zeros_zero_matrix_output =
